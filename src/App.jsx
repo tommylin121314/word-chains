@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-// --- DAILY PUZZLES (STATIC FOR NOW) ---
 const CHAINS = [
   ["HOUSE", "TOUR", "GUIDE", "RAIL", "ROAD", "TRIP"],
   ["COFFEE", "CUP", "HANDLE", "BAR", "EXAM", "PROCTOR"],
@@ -12,7 +11,6 @@ const CHAINS = [
   ["BIRTH", "DAY", "DRINKING", "FOUNTAIN", "PEN", "PAL"]
 ];
 
-// --- DATE-BASED PUZZLE SELECTION ---
 function getTodayChain() {
   const today = new Date().toISOString().slice(0, 10);
   let hash = 0;
@@ -30,7 +28,7 @@ export default function App() {
     const saved = localStorage.getItem(todayKey);
     return saved
       ? JSON.parse(saved)
-      : { index: 0, guesses: [], completed: false, revealedLetters: {} };
+      : { index: 0, guesses: [], completed: false, failed: false, revealedLetters: {} };
   });
 
   const [input, setInput] = useState("");
@@ -55,7 +53,6 @@ export default function App() {
         completed: newIndex === chain.length - 1
       }));
     } else {
-      // incorrect guess: reveal one more letter of the next word
       if (nextIndex < chain.length) {
         setState((prev) => {
           const revealed = { ...(prev.revealedLetters || {}) };
@@ -64,11 +61,11 @@ export default function App() {
           return {
             ...prev,
             revealedLetters: revealed,
-            guesses: [...prev.guesses, guess]
+            guesses: [...prev.guesses, guess],
+            failed: current + 1 === chain[nextIndex].length
           };
         });
       } else {
-        // guess after last (shouldn't happen) — just record it
         setState((prev) => ({ ...prev, guesses: [...prev.guesses, guess] }));
       }
     }
@@ -110,7 +107,7 @@ export default function App() {
         })}
       </div>
 
-      {!state.completed && (
+      {!state.completed && !state.failed && (
         <form onSubmit={submitGuess}>
           <input
             value={input}
@@ -127,6 +124,20 @@ export default function App() {
           🎉 Chain complete!
         </div>
       )}
+
+      {state.failed && (
+        <div className="complete">
+          You're a dumbass!
+        </div>
+      )}
+
+      <button 
+        onClick={() => setState({ index: 0, guesses: [], completed: false, failed: false, revealedLetters: {} })}
+        style={{"margin": "15px"}}
+      >
+        Reset
+      </button>
+
     </div>
   );
 }
