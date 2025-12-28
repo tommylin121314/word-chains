@@ -31,6 +31,8 @@ h1 {
   border: 2px solid #3a3a3c;
   font-weight: bold;
   font-size: 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", monospace;
+  letter-spacing: 0.06em;
   padding: 8px 12px;
   box-sizing: border-box;
 }
@@ -44,9 +46,10 @@ h1 {
 
 .blank-letter {
   display: inline-block;
-  width: 18px;
+  width: 1ch;
   height: 22px;
   border-bottom: 2px solid #3a3a3c;
+  text-align: center;
 }
 
 .blank-letter.revealed {
@@ -66,8 +69,12 @@ h1 {
 input {
   width: 100%;
   padding: 12px;
-  font-size: 16px;
+  font-size: 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", monospace;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .complete {
