@@ -85,25 +85,19 @@ export default function App() {
           const revealed = i <= state.index;
           const revealedCount = (state.revealedLetters && state.revealedLetters[i]) || 0;
           return (
-            <div key={i} className={`cell ${revealed ? "revealed" : ""}`}>
-              {i === 0 ? (
-                chain[0]
-              ) : revealed ? (
-                word
-              ) : (
-                <div className="blanks" aria-hidden>
-                  {Array.from({ length: word.length }).map((_, k) => (
-                    <span
-                      key={k}
-                      className={
-                        "blank-letter" + (k < revealedCount ? " revealed" : "")
-                      }
-                    >
-                      {k < revealedCount ? word[k] : null}
-                    </span>
-                  ))}
-                </div>
-              )}
+            <div key={i} className="row" aria-label={`word ${i}`}>
+              {Array.from({ length: word.length }).map((_, k) => {
+                const letterRevealed = i === 0 || revealed || k < revealedCount;
+                return (
+                  <div
+                    key={k}
+                    className={`cell ${letterRevealed ? "revealed" : ""}`}
+                    aria-hidden={!letterRevealed}
+                  >
+                    {letterRevealed ? word[k] : null}
+                  </div>
+                );
+              })}
             </div>
           );
         })}
