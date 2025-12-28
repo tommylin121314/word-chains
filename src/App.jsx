@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 
 // --- DAILY PUZZLES (STATIC FOR NOW) ---
 const CHAINS = [
-  ["HOUSE", "TOUR", "GUIDE"],
-  ["COFFEE", "CUP", "HANDLE"],
-  ["SCHOOL", "BUS", "DRIVER"],
-  ["PHONE", "BATTERY", "CHARGER"]
+  ["HOUSE", "TOUR", "GUIDE", "RAIL", "ROAD", "TRIP"],
+  ["COFFEE", "CUP", "HANDLE", "BAR", "EXAM", "PROCTOR"],
+  ["SCHOOL", "BUS", "DRIVER", "LICENSE", "PLATE", "NUMBER"],
+  ["PHONE", "BATTERY", "CHARGER", "CABLE", "INTERNET", "SPEED"],
+  ["SALAD", "DRESSING", "ROOM", "KEY", "CHAIN", "SAW"],
+  ["SPARKLING", "WATER", "LOG", "CABIN", "FEVER", "DREAM"],
+  ["MINUTE", "HAND", "WATCH", "BAND", "WAGON", "WHEEL"],
+  ["BIRTH", "DAY", "DRINKING", "FOUNTAIN", "PEN", "PAL"]
 ];
 
 // --- DATE-BASED PUZZLE SELECTION ---
