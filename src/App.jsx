@@ -82,19 +82,26 @@ export default function App() {
 
       <div className="chain">
         {chain.map((word, i) => {
-          const revealed = i <= state.index;
+          const wordGuessed = i <= state.index;
+          const isFirstWord = i === 0;
           const revealedCount = (state.revealedLetters && state.revealedLetters[i]) || 0;
           return (
             <div key={i} className="row" aria-label={`word ${i}`}>
               {Array.from({ length: word.length }).map((_, k) => {
-                const letterRevealed = i === 0 || revealed || k < revealedCount;
+                const isFirstLetter = k === 0 && revealedCount > 0;
+                const letterRevealed = isFirstWord || isFirstLetter ? true : k < revealedCount;
+                const showLetter = (isFirstLetter || letterRevealed || wordGuessed || isFirstWord);
                 return (
                   <div
                     key={k}
-                    className={`cell ${letterRevealed ? "revealed" : ""}`}
-                    aria-hidden={!letterRevealed}
+                    className={`cell ${
+                      isFirstWord ? "free-revealed" : isFirstLetter 
+                        ? "free-revealed" : letterRevealed 
+                          ? "revealed" : wordGuessed 
+                            ? "guessed" : ""}`}
+                    aria-hidden={!(letterRevealed)}
                   >
-                    {letterRevealed ? word[k] : null}
+                    {showLetter ? word[k] : null}
                   </div>
                 );
               })}

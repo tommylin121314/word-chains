@@ -60,10 +60,8 @@ h1 {
   color: #fff;
 }
 
-.cell.revealed {
-  /* base same green as guessed */
+.cell.free-revealed {
   background-color: #538d4e;
-  /* subtle diagonal stripes on top */
   background-image: repeating-linear-gradient(
     45deg,
     rgba(255,255,255,0.1) 0,
@@ -73,6 +71,12 @@ h1 {
   );
   background-blend-mode: overlay;
   border-color: #538d4e;
+  color: #fff;
+}
+
+.cell.revealed {
+  background: #bea73e;
+  border-color: #bea73e;
   color: #fff;
 }
 
