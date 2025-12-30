@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 
 const CHAINS = [
-  ["HOUSE", "TOUR", "GUIDE", "RAIL", "ROAD", "TRIP"],
   ["COFFEE", "CUP", "HANDLE", "BAR", "EXAM", "PROCTOR"],
-  ["SCHOOL", "BUS", "DRIVER", "LICENSE", "PLATE", "NUMBER"],
   ["PHONE", "BATTERY", "CHARGER", "CABLE", "INTERNET", "SPEED"],
-  ["SALAD", "DRESSING", "ROOM", "KEY", "CHAIN", "SAW"],
-  ["SPARKLING", "WATER", "LOG", "CABIN", "FEVER", "DREAM"],
+  ["BIRTH", "DAY", "DRINKING", "FOUNTAIN", "PEN", "PAL"],
   ["MINUTE", "HAND", "WATCH", "BAND", "WAGON", "WHEEL"],
-  ["BIRTH", "DAY", "DRINKING", "FOUNTAIN", "PEN", "PAL"]
+  ["SPARKLING", "WATER", "LOG", "CABIN", "FEVER", "DREAM"],
+  ["SCHOOL", "BUS", "DRIVER", "LICENSE", "PLATE", "NUMBER"],
+  ["HOUSE", "TOUR", "GUIDE", "RAIL", "ROAD", "TRIP"],
+  ["SALAD", "DRESSING", "ROOM", "KEY", "CHAIN", "SAW"]
 ];
 
 function getTodayChain() {
