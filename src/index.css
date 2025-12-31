@@ -152,6 +152,10 @@ input {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.reset-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .copied {
   color: #b7f7d9;
   font-weight: 600;

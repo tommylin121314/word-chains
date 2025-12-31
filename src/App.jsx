@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 
 const CHAINS = [
   ["COFFEE", "CUP", "HANDLE", "BAR", "EXAM", "PROCTOR"],
-  ["PHONE", "BATTERY", "CHARGER", "CABLE", "INTERNET", "SPEED"],
   ["BIRTH", "DAY", "DRINKING", "FOUNTAIN", "PEN", "PAL"],
   ["MINUTE", "HAND", "WATCH", "BAND", "WAGON", "WHEEL"],
-  ["SPARKLING", "WATER", "LOG", "CABIN", "FEVER", "DREAM"],
   ["SCHOOL", "BUS", "DRIVER", "LICENSE", "PLATE", "NUMBER"],
   ["HOUSE", "TOUR", "GUIDE", "RAIL", "ROAD", "TRIP"],
+  ["PHONE", "BATTERY", "CHARGER", "CABLE", "INTERNET", "SPEED"],
+  ["SPARKLING", "WATER", "LOG", "CABIN", "FEVER", "DREAM"],
   ["SALAD", "DRESSING", "ROOM", "KEY", "CHAIN", "SAW"]
 ];
 
