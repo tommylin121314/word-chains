@@ -45,10 +45,30 @@ h1 {
   padding: 6px;
   box-sizing: border-box;
   background: transparent;
+  position: relative;
 }
 
 .cell:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Current active row cells (not-yet-typed) show a subtle lighter background */
+.cell.current {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* translucent question mark for free-letter hints (hidden cells) */
+.cell.free-hint::after {
+  content: "?";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  opacity: 0.16;
+  font-weight: 800;
+  font-size: 28px;
+  pointer-events: none;
 }
 
 .blanks {

@@ -94,8 +94,12 @@ export default function App() {
 
   // Resets game state to initial values
   function resetState() {
+    const freeLetters = [];
+    for (let i = 1; i < chain.length; i++) {
+      freeLetters.push([...randInts(Math.floor(chain[i].length / 6) + 1, chain[i].length)]);
+    }
     const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
-    setState({ index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining });
+    setState({ index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining, freeLetters: freeLetters });
     setInput("");
   }
 
@@ -218,16 +222,25 @@ export default function App() {
                 const inputChar = isCurrentRow ? inputChars[k] || null : null;
                 const showLetter = (isFirstLetter || wordGuessed || isFirstWord || inputChar);
                 const display = (inputChar ?? (showLetter ? word[k] : null));
-                
+
+                // free letter indices are stored for words after the first one
+                const freeIndices = state.freeLetters?.[i - 1] || [];
+                const isFreeIndex = i > 0 && (freeIndices.includes ? freeIndices.includes(k) : Array.from(freeIndices).includes(k));
+
+                // build class list
+                const classes = ["cell"];
+                if (perfectGuess) classes.push("perfect-guess");
+                else if (isFirstWord) classes.push("free-revealed");
+                else if (isFirstLetter) classes.push("given");
+                else if (wordGuessed) classes.push("guessed");
+
+                // add translucent question-mark hint for free-letter cells that are still hidden
+                if (isFreeIndex && !showLetter) classes.push("free-hint");
+
                 return (
                   <div
                     key={k}
-                    className={`cell ${
-                      perfectGuess ? "perfect-guess" :
-                        isFirstWord ? "free-revealed" :
-                          inputChar ? "" :
-                            isFirstLetter ? "given" : 
-                              wordGuessed ? "guessed" : ""}`}
+                    className={classes.join(" ")}
                     aria-hidden={!(display)}
                   >
                     {display}
