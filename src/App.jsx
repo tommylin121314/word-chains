@@ -28,17 +28,27 @@ export default function App() {
   // Initializes state from localStorage or default values
   const [state, setState] = useState(() => {
     const saved = localStorage.getItem(todayKey);
+    const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
     return saved
       ? JSON.parse(saved)
-      : { index: 0, guesses: [], completed: false, failed: false, revealedLetters: {}, guessesRemaining: chain[0].length - 1};
+      : { index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining };
   });
-
   const [input, setInput] = useState("");
 
+  // Persists state to localStorage on changes
   useEffect(() => {
     localStorage.setItem(todayKey, JSON.stringify(state));
   }, [state]);
 
+  // Checks for win condition
+  useEffect(() => {
+    checkForWin();
+  }, [state.index]);
+
+  // Checks for loss condition
+  useEffect(() => {
+    checkForLoss();
+  }, [state.guessesRemaining]);
 
   // Handles guess submission
   function submitGuess(e) {
@@ -48,27 +58,27 @@ export default function App() {
 
     const nextIndex = state.index + 1;
 
+    console.log(state.guessesRemaining);
+
+    // Handles a correct guess
     if (nextIndex < chain.length && guess === chain[nextIndex]) {
       const newIndex = nextIndex;
       setState((prev) => ({
         ...prev,
-        index: newIndex,                                                                  // Sets index to index of next word in chain
-        guesses: [...prev.guesses, guess],                                                // Adds the correct guess to the list of guesses                       
-        completed: newIndex === chain.length - 1,                                         // Checks if the chain is completed
-        guessesRemaining: newIndex < chain.length ? chain[newIndex + 1].length - 1 : 0    // Sets guessesRemaining for the next word
+        index: newIndex,                                                          // Sets index to index of next word in chain
+        guesses: [...prev.guesses, guess],                                        // Adds the correct guess to the list of guesses                       
       }));
-    } else {
+    } 
+    // Handles an incorrect guess
+    else {
       if (nextIndex < chain.length) {
         setState((prev) => {
-          const revealed = { ...(prev.revealedLetters || {}) };
-          const current = revealed[nextIndex] || 0;
-          if (current < chain[nextIndex].length - 1) revealed[nextIndex] = current + 1;
           return {
             ...prev,
-            revealedLetters: revealed,                                                    // Updates revealed letters for the next word
-            guesses: [...prev.guesses, guess],                                            // Adds the incorrect guess to the list of guesses
-            failed: current + 1 === chain[nextIndex].length,                              // Fails the game if all letters are revealed
-            guessesRemaining: prev.guessesRemaining - 1                                   // Decreases guesses remaining by 1
+            guesses: [...prev.guesses, guess],                                    // Adds the incorrect guess to the list of guesses
+            guessesRemaining: prev.guessesRemaining.map((num, i) =>               // Decreases remaining guesses for the next word
+              i === state.index ? num - 1 : num
+            )
           };
         });
       } else {
@@ -76,7 +86,26 @@ export default function App() {
       }
     }
 
-    setInput(""); // Clear input field                                                    // Resets input field for next guess
+    console.log(state.guessesRemaining);
+    setInput("");                                                                 // Resets input field for next guess
+  }
+
+  function resetState() {
+    const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
+    setState({ index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining });
+    setInput("");
+  }
+
+  function checkForWin() {
+    if (!state.completed && state.index === chain.length - 1) {
+      setState((prev) => ({ ...prev, completed: true }));
+    }
+  }
+
+  function checkForLoss() {
+    if (state.guessesRemaining[state.index] <= 0) {
+      setState((prev) => ({ ...prev, failed: true }));
+    }
   }
 
   return (
@@ -87,22 +116,20 @@ export default function App() {
         {chain.map((word, i) => {
           const wordGuessed = i <= state.index;
           const isFirstWord = i === 0;
-          const revealedCount = (state.revealedLetters && state.revealedLetters[i]) || 0;
+          const firstLetterRevealed = (i > 0 && state.guessesRemaining[i - 1] === 1);
           return (
             <div key={i} className="row" aria-label={`word ${i}`}>
               {Array.from({ length: word.length }).map((_, k) => {
-                const isFirstLetter = k === 0 && revealedCount > 0;
-                const letterRevealed = isFirstWord || isFirstLetter ? true : k < revealedCount;
-                const showLetter = (isFirstLetter || letterRevealed || wordGuessed || isFirstWord);
+                const isFirstLetter = k === 0 && firstLetterRevealed;
+                const showLetter = (isFirstLetter || wordGuessed || isFirstWord);
                 return (
                   <div
                     key={k}
                     className={`cell ${
-                      isFirstWord ? "free-revealed" : isFirstLetter 
-                        ? "free-revealed" : letterRevealed 
-                          ? "revealed" : wordGuessed 
-                            ? "guessed" : ""}`}
-                    aria-hidden={!(letterRevealed)}
+                      isFirstWord ? "free-revealed" : 
+                        isFirstLetter ? "free-revealed" : 
+                            wordGuessed ? "guessed" : ""}`}
+                    aria-hidden={!(showLetter)}
                   >
                     {showLetter ? word[k] : null}
                   </div>
@@ -138,7 +165,7 @@ export default function App() {
       )}
 
       <button 
-        onClick={() => setState({ index: 0, guesses: [], completed: false, failed: false, revealedLetters: {} })}
+        onClick={() => resetState()}
         style={{"margin": "15px"}}
       >
         Reset
