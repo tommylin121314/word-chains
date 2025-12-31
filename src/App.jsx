@@ -123,6 +123,8 @@ export default function App() {
           const isCurrentRow = i === state.index + 1;
           const inputChars = (input || "").toUpperCase().split("");
 
+          const remainingForRow = i > 0 ? (state.guessesRemaining && state.guessesRemaining[i - 1]) || 0 : 0;
+
           return (
             <div key={i} className="row" aria-label={`word ${i}`}>
               {Array.from({ length: word.length }).map((_, k) => {
@@ -143,6 +145,17 @@ export default function App() {
                     aria-hidden={!(display)}
                   >
                     {display}
+                    {(() => {
+                      const showHeartForCell = isCurrentRow && !state.completed && !state.failed && (k >= (word.length - Math.max(0, remainingForRow)));
+                      return (
+                        <span
+                          aria-hidden
+                          className={`heart ${showHeartForCell ? "visible" : "hidden"}`}
+                        >
+                          ♥
+                        </span>
+                      );
+                    })()}
                   </div>
                 );
               })}

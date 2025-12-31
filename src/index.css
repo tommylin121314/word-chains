@@ -31,6 +31,7 @@ h1 {
 }
 
 .cell {
+  position: relative;
   min-width: 56px;
   min-height: 56px;
   display: inline-flex;
@@ -45,6 +46,29 @@ h1 {
   padding: 6px;
   box-sizing: border-box;
   background: transparent;
+}
+
+.heart {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 12px;
+  line-height: 1;
+  color: #ff6b6b;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35);
+  transform-origin: center;
+  transition: transform 160ms ease, opacity 160ms ease;
+  pointer-events: none;
+}
+
+.heart.hidden {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.heart.visible {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .blanks {
