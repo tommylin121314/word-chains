@@ -11,6 +11,7 @@ const CHAINS = [
   ["SALAD", "DRESSING", "ROOM", "KEY", "CHAIN", "SAW"]
 ];
 
+// Fetches word chain based on current date
 function getTodayChain() {
   const today = new Date().toISOString().slice(0, 10);
   let hash = 0;
@@ -24,11 +25,12 @@ export default function App() {
   const chain = getTodayChain();
   const todayKey = `wordchain-${new Date().toISOString().slice(0, 10)}`;
 
+  // Initializes state from localStorage or default values
   const [state, setState] = useState(() => {
     const saved = localStorage.getItem(todayKey);
     return saved
       ? JSON.parse(saved)
-      : { index: 0, guesses: [], completed: false, failed: false, revealedLetters: {} };
+      : { index: 0, guesses: [], completed: false, failed: false, revealedLetters: {}, guessesRemaining: chain[0].length - 1};
   });
 
   const [input, setInput] = useState("");
@@ -37,6 +39,8 @@ export default function App() {
     localStorage.setItem(todayKey, JSON.stringify(state));
   }, [state]);
 
+
+  // Handles guess submission
   function submitGuess(e) {
     e.preventDefault();
     const guess = input.trim().toUpperCase();
@@ -48,9 +52,10 @@ export default function App() {
       const newIndex = nextIndex;
       setState((prev) => ({
         ...prev,
-        index: newIndex,
-        guesses: [...prev.guesses, guess],
-        completed: newIndex === chain.length - 1
+        index: newIndex,                                                                  // Sets index to index of next word in chain
+        guesses: [...prev.guesses, guess],                                                // Adds the correct guess to the list of guesses                       
+        completed: newIndex === chain.length - 1,                                         // Checks if the chain is completed
+        guessesRemaining: newIndex < chain.length ? chain[newIndex + 1].length - 1 : 0    // Sets guessesRemaining for the next word
       }));
     } else {
       if (nextIndex < chain.length) {
@@ -60,9 +65,10 @@ export default function App() {
           if (current < chain[nextIndex].length - 1) revealed[nextIndex] = current + 1;
           return {
             ...prev,
-            revealedLetters: revealed,
-            guesses: [...prev.guesses, guess],
-            failed: current + 1 === chain[nextIndex].length
+            revealedLetters: revealed,                                                    // Updates revealed letters for the next word
+            guesses: [...prev.guesses, guess],                                            // Adds the incorrect guess to the list of guesses
+            failed: current + 1 === chain[nextIndex].length,                              // Fails the game if all letters are revealed
+            guessesRemaining: prev.guessesRemaining - 1                                   // Decreases guesses remaining by 1
           };
         });
       } else {
@@ -70,7 +76,7 @@ export default function App() {
       }
     }
 
-    setInput("");
+    setInput(""); // Clear input field                                                    // Resets input field for next guess
   }
 
   return (
