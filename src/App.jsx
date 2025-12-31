@@ -34,6 +34,7 @@ export default function App() {
       : { index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining };
   });
   const [input, setInput] = useState("");
+  const [copied, setCopied] = useState(false);
 
   // Persists state to localStorage on changes
   useEffect(() => {
@@ -87,27 +88,100 @@ export default function App() {
     setInput("");                                                                 // Resets input field for next guess
   }
 
+  // Resets game state to initial values
   function resetState() {
     const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
     setState({ index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining });
     setInput("");
   }
 
+  // Checks for win condition
   function checkForWin() {
     if (!state.completed && state.index === chain.length - 1) {
       setState((prev) => ({ ...prev, completed: true }));
     }
   }
 
+  // Checks for loss condition
   function checkForLoss() {
     if (state.guessesRemaining[state.index] <= 0) {
       setState((prev) => ({ ...prev, failed: true }));
     }
   }
 
+  // Checks if guess is valid based on expected length
   function isValidGuess(guess) {
     return (guess.length === (chain[state.index + 1]?.length || 0))
   }
+
+
+  // Build a textual representation of the current gameboard for sharing
+  function buildShareText() {
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, "/");
+    const lines = [`Word Chain — ${today}\n`];
+    const greenBox = "🟩";
+    const blueBox = "🟦";
+    const blackBox = "⬛";
+
+    // Add first word (given)
+    lines.push(greenBox.repeat(chain[0].length));
+
+    // Add subsequent words
+    for (let i = 1; i < chain.length; i++) {
+      const firstLetterRevealed = state.guessesRemaining[i - 1] === 1;
+      const wordGuessed = i <= state.index;
+      const perfectGuess = (i > 0 && state.guessesRemaining[i - 1] === chain[i].length && wordGuessed);
+      if (wordGuessed) {
+        if (perfectGuess) {
+          lines.push(chain[i].split("").map(() => blueBox).join(""));
+        }
+        else {
+          lines.push(firstLetterRevealed ? blackBox + greenBox.repeat(chain[i].length - 1) : greenBox.repeat(chain[i].length));
+        }
+      }
+      else {
+        lines.push(blackBox.repeat(chain[i].length));
+      }
+    }
+
+    // Calculate and add accuracy
+    const totalGuesses = chain.reduce((acc, _, i) => (i === 0 || i > state.index + 1) ? acc : acc + (chain[i].length), 0);
+    const guessesRemaining = state.guessesRemaining.reduce((acc, num, i) => (i > state.index) ? acc: acc + num, 0);
+    lines.push(`\nAccuracy: ${Math.round(guessesRemaining * 100 / totalGuesses)}%`);
+
+    // Add win/loss message
+    if (state.completed) {
+      lines.push(`\n🎉 I Won! 😝`);
+    }
+    else if (state.failed) {
+      lines.push(`\n😔 I Lost! 😭`);
+    }
+    
+    return lines.join("\n");
+  }
+
+  async function handleShare() {
+    const text = buildShareText();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (err) {
+      console.error("Copy failed", err);
+      alert("Unable to copy to clipboard");
+    }
+  }
+
 
   return (
     <div className="app">
@@ -165,19 +239,25 @@ export default function App() {
 
       {state.completed && (
         <div className="complete">
-          🎉 Chain complete! ✅
+          🎉 You Won! 😝
         </div>
       )}
 
       {state.failed && (
         <div className="complete">
-          😔 You Failed! 😭
+          😔 You Lost! 😭
+        </div>
+      )}
+
+      {(state.completed || state.failed) && (
+        <div>
+          <button className="share-btn" onClick={handleShare} aria-label="Share results">{copied ? "Copied!" : "Share"}</button>
         </div>
       )}
 
       <button 
         onClick={() => resetState()}
-        style={{"margin": "15px"}}
+        className="reset-btn"
       >
         Reset
       </button>
