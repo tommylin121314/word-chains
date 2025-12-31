@@ -117,6 +117,7 @@ export default function App() {
           const wordGuessed = i <= state.index;
           const isFirstWord = i === 0;
           const firstLetterRevealed = (i > 0 && state.guessesRemaining[i - 1] === 1);
+          const perfectGuess = (i > 0 && state.guessesRemaining[i - 1] === word.length && wordGuessed);
           return (
             <div key={i} className="row" aria-label={`word ${i}`}>
               {Array.from({ length: word.length }).map((_, k) => {
@@ -126,9 +127,10 @@ export default function App() {
                   <div
                     key={k}
                     className={`cell ${
-                      isFirstWord ? "free-revealed" : 
-                        isFirstLetter ? "free-revealed" : 
-                            wordGuessed ? "guessed" : ""}`}
+                      perfectGuess ? "perfect-guess" :
+                        isFirstWord ? "free-revealed" : 
+                          isFirstLetter ? "free-revealed" : 
+                              wordGuessed ? "guessed" : ""}`}
                     aria-hidden={!(showLetter)}
                   >
                     {showLetter ? word[k] : null}
@@ -154,13 +156,13 @@ export default function App() {
 
       {state.completed && (
         <div className="complete">
-          🎉 Chain complete!
+          🎉 Chain complete! ✅
         </div>
       )}
 
       {state.failed && (
         <div className="complete">
-          You're a dumbass!
+          😔 You Failed! 😭
         </div>
       )}
 

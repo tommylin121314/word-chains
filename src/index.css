@@ -55,9 +55,33 @@ h1 {
 }
 
 .cell.guessed {
-  background: #538d4e;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #65ac54 0%, #538d4e 65%);
   border-color: #538d4e;
   color: #fff;
+  box-shadow: 0 6px 16px rgba(83,141,78,0.14), inset 0 1px 0 rgba(255,255,255,0.12);
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.cell.guessed:hover {
+  transform: translateY(-1.5px) scale(1.01);
+  box-shadow: 0 10px 24px rgba(83,141,78,0.2), inset 0 1px 0 rgba(255,255,255,0.16);
+}
+
+.cell.guessed::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -40%;
+  width: 120%;
+  height: 220%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.0) 60%);
+  transform: rotate(-25deg) translateX(-100%);
+  filter: blur(5px);
+  pointer-events: none;
+  animation: perfect-shine 2.4s ease-in-out infinite;
+  mix-blend-mode: screen;
 }
 
 .cell.free-revealed {
@@ -74,10 +98,29 @@ h1 {
   color: #fff;
 }
 
-.cell.revealed {
-  background: #bea73e;
-  border-color: #bea73e;
+.cell.perfect-guess {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #6fd6db 0%, #4ea2a8 60%);
+  border-color: #4ea2a8;
   color: #fff;
+  box-shadow: 0 6px 18px rgba(78,162,168,0.18), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.cell.perfect-guess::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -40%;
+  width: 120%;
+  height: 220%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.0) 60%);
+  transform: rotate(-25deg) translateX(-100%);
+  filter: blur(6px);
+  pointer-events: none;
+  animation: perfect-shine 1.6s ease-in-out infinite;
+  mix-blend-mode: screen;
 }
 
 input {
