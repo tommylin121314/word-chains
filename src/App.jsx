@@ -54,11 +54,9 @@ export default function App() {
   function submitGuess(e) {
     e.preventDefault();
     const guess = input.trim().toUpperCase();
-    if (!guess || state.completed) return;
+    if (!isValidGuess(guess)) return;
 
     const nextIndex = state.index + 1;
-
-    console.log(state.guessesRemaining);
 
     // Handles a correct guess
     if (nextIndex < chain.length && guess === chain[nextIndex]) {
@@ -86,7 +84,6 @@ export default function App() {
       }
     }
 
-    console.log(state.guessesRemaining);
     setInput("");                                                                 // Resets input field for next guess
   }
 
@@ -108,8 +105,13 @@ export default function App() {
     }
   }
 
+  function isValidGuess(guess) {
+    return (guess.length === (chain[state.index + 1]?.length || 0))
+  }
+
   return (
     <div className="app">
+      
       <h1>Word Chain</h1>
 
       <div className="chain">
@@ -118,22 +120,29 @@ export default function App() {
           const isFirstWord = i === 0;
           const firstLetterRevealed = (i > 0 && state.guessesRemaining[i - 1] === 1);
           const perfectGuess = (i > 0 && state.guessesRemaining[i - 1] === word.length && wordGuessed);
+          const isCurrentRow = i === state.index + 1;
+          const inputChars = (input || "").toUpperCase().split("");
+
           return (
             <div key={i} className="row" aria-label={`word ${i}`}>
               {Array.from({ length: word.length }).map((_, k) => {
                 const isFirstLetter = k === 0 && firstLetterRevealed;
-                const showLetter = (isFirstLetter || wordGuessed || isFirstWord);
+                const inputChar = isCurrentRow ? inputChars[k] || null : null;
+                const showLetter = (isFirstLetter || wordGuessed || isFirstWord || inputChar);
+                const display = (inputChar ?? (showLetter ? word[k] : null));
+                
                 return (
                   <div
                     key={k}
                     className={`cell ${
                       perfectGuess ? "perfect-guess" :
-                        isFirstWord ? "free-revealed" : 
-                          isFirstLetter ? "free-revealed" : 
+                        isFirstWord ? "free-revealed" :
+                          inputChar ? "" :
+                            isFirstLetter ? "given" : 
                               wordGuessed ? "guessed" : ""}`}
-                    aria-hidden={!(showLetter)}
+                    aria-hidden={!(display)}
                   >
-                    {showLetter ? word[k] : null}
+                    {display}
                   </div>
                 );
               })}
@@ -147,7 +156,7 @@ export default function App() {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            maxLength={15}
+            maxLength={chain[state.index + 1]?.length || 20}
             autoFocus
             placeholder="Next word..."
           />
