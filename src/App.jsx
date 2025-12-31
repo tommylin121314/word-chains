@@ -28,10 +28,14 @@ export default function App() {
   // Initializes state from localStorage or default values
   const [state, setState] = useState(() => {
     const saved = localStorage.getItem(todayKey);
+    const freeLetters = [];
+    for (let i = 1; i < chain.length; i++) {
+      freeLetters.push([...randInts(Math.floor(chain[i].length / 6) + 1, chain[i].length)]);
+    }
     const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
     return saved
       ? JSON.parse(saved)
-      : { index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining };
+      : { index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining, freeLetters: freeLetters };
   });
   const [input, setInput] = useState("");
   const [copied, setCopied] = useState(false);
@@ -112,6 +116,16 @@ export default function App() {
   // Checks if guess is valid based on expected length
   function isValidGuess(guess) {
     return (guess.length === (chain[state.index + 1]?.length || 0))
+  }
+
+  // Helper function to generate position of free letters
+  function randInts(n, max) {
+    const ints = new Set();
+    for (let i = 0; i < max * n; i++) {
+      if (ints.size >= n) break;
+      ints.add(Math.floor(Math.random() * max));
+    }
+    return ints;
   }
 
 
