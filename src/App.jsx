@@ -30,7 +30,7 @@ export default function App() {
     const saved = localStorage.getItem(todayKey);
     const freeLetters = [];
     for (let i = 1; i < chain.length; i++) {
-      freeLetters.push([...randInts(Math.floor(chain[i].length / 6) + 1, chain[i].length)]);
+      freeLetters.push([...randInts(Math.floor(chain[i].length / 5) + 1, chain[i].length - 1)]);
     }
     const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
     return saved
@@ -96,7 +96,7 @@ export default function App() {
   function resetState() {
     const freeLetters = [];
     for (let i = 1; i < chain.length; i++) {
-      freeLetters.push([...randInts(Math.floor(chain[i].length / 6) + 1, chain[i].length)]);
+      freeLetters.push([...randInts(Math.floor(chain[i].length / 5) + 1, chain[i].length - 1)]);
     }
     const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
     setState({ index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining, freeLetters: freeLetters });
