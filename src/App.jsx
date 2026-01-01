@@ -210,32 +210,36 @@ export default function App() {
         {chain.map((word, i) => {
           const wordGuessed = i <= state.index;
           const isFirstWord = i === 0;
-          const firstLetterRevealed = (i > 0 && state.guessesRemaining[i - 1] === 1);
           const perfectGuess = (i > 0 && state.guessesRemaining[i - 1] === word.length && wordGuessed);
           const isCurrentRow = i === state.index + 1;
           const inputChars = (input || "").toUpperCase().split("");
+          const guessesRemaining = state.guessesRemaining[i - 1] || 0;
 
           return (
             <div key={i} className="row" aria-label={`word ${i}`}>
               {Array.from({ length: word.length }).map((_, k) => {
-                const isFirstLetter = k === 0 && firstLetterRevealed;
                 const inputChar = isCurrentRow ? inputChars[k] || null : null;
-                const showLetter = (isFirstLetter || wordGuessed || isFirstWord || inputChar);
-                const display = (inputChar ?? (showLetter ? word[k] : null));
+                const highlightCell = isCurrentRow && (k >= (word.length - guessesRemaining));
 
                 // free letter indices are stored for words after the first one
                 const freeIndices = state.freeLetters?.[i - 1] || [];
                 const isFreeIndex = i > 0 && (freeIndices.includes ? freeIndices.includes(k) : Array.from(freeIndices).includes(k));
+                const freeLetterRevealed = i > 0 && (word.length - guessesRemaining > k) && isFreeIndex;
+
+                const showLetter = (freeLetterRevealed || wordGuessed || isFirstWord || inputChar);
+                const display = (inputChar ?? (showLetter ? word[k] : null));
+
 
                 // build class list
                 const classes = ["cell"];
                 if (perfectGuess) classes.push("perfect-guess");
                 else if (isFirstWord) classes.push("free-revealed");
-                else if (isFirstLetter) classes.push("given");
+                else if (freeLetterRevealed) classes.push("given");
                 else if (wordGuessed) classes.push("guessed");
 
                 // add translucent question-mark hint for free-letter cells that are still hidden
                 if (isFreeIndex && !showLetter) classes.push("free-hint");
+                if (highlightCell) classes.push("highlight-cell");
 
                 return (
                   <div

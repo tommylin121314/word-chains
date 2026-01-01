@@ -53,7 +53,7 @@ h1 {
 }
 
 /* Current active row cells (not-yet-typed) show a subtle lighter background */
-.cell.current {
+.cell.highlight-cell {
   background: rgba(255, 255, 255, 0.1);
 }
 
