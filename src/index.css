@@ -6,10 +6,85 @@ body {
 }
 
 .app {
-  max-width: 400px;
-  margin: 40px auto;
+  display: flex;
+  gap: 20px;
+  max-width: 920px;
+  margin: 24px auto;
+  align-items: flex-start;
+}
+
+.main {
+  flex: 1 1 auto;
+  max-width: 640px;
+  margin: 0 auto;
   text-align: center;
 }
+
+.side-menu {
+  width: 180px;
+  background: rgba(255,255,255,0.02);
+  border: 2px solid #2f2f2f;
+  padding: 12px;
+  box-sizing: border-box;
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1200;
+  /* border-radius: 8px; */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+.side-menu h3 {
+  margin: 6px 0 10px 0;
+  font-size: 14px;
+  color: #ddd;
+}
+
+.date-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* Smooth scrolling and custom scrollbar styles for the date list */
+.date-list {
+  scroll-behavior: smooth;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(255,255,255,0.10) transparent;
+}
+
+.date-list::-webkit-scrollbar {
+  width: 10px;
+}
+.date-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.date-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.10));
+  /* border-radius: 8px; */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.date-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.18));
+}
+
+.date-item {
+  padding: 8px 10px;
+  /* border-radius: 4px; */
+  color: #fff;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+}
+.date-item:hover { background: rgba(255,255,255,0.03); }
+.date-item.active { background: linear-gradient(90deg,#2a2a2a,#222); border-color:#3a3a3a; }
 
 h1 {
   margin-bottom: 30px;

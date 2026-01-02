@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import Keyboard from "./Keyboard";
 import Chain from "./Chain";
+import DateMenu from "./DateMenu";
 import Srand from 'seeded-rand';
 import CHAINS from "./chains";
 
-// Fetches word chain based on current date
-function getTodayChain() {
-  const today = new Date().toISOString().slice(0, 10);
+// Fetches word chain based on a date string (YYYY-MM-DD)
+function getChainForDate(dateStr) {
+  const today = dateStr || new Date().toISOString().slice(0, 10);
   let hash = 0;
   for (let i = 0; i < today.length; i++) {
     hash = (hash << 5) - hash + today.charCodeAt(i);
@@ -15,8 +16,9 @@ function getTodayChain() {
 }
 
 export default function App() {
-  const chain = getTodayChain();
-  const todayKey = `wordchain-${new Date().toISOString().slice(0, 10)}`;
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const chain = getChainForDate(selectedDate);
+  const todayKey = `wordchain-${selectedDate}`;
   const rnd = new Srand(todayKey);
 
   // Initializes state from localStorage or default values
@@ -37,6 +39,22 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(todayKey, JSON.stringify(state));
   }, [state]);
+
+  // When the selected date changes, reload (or create) state for that date
+  useEffect(() => {
+    const saved = localStorage.getItem(todayKey);
+    const freeLetters = generateFreeLetterIndices();
+    const defaultGuessesRemaining = getWordLengths().slice(1);
+    if (saved) {
+      try {
+        setState(JSON.parse(saved));
+        return;
+      } catch (e) {
+        // fallthrough to default
+      }
+    }
+    setState({ index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining, freeLetters: freeLetters });
+  }, [selectedDate]);
 
   // Checks for win condition
   useEffect(() => {
@@ -229,7 +247,8 @@ export default function App() {
 
   return (
     <div className="app">
-      
+      <DateMenu selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+      <div className="main">
       <h1>Word Chain</h1>
 
       <Chain
@@ -274,6 +293,8 @@ export default function App() {
       >
         Reset
       </button>
+
+      </div>
 
     </div>
   );
