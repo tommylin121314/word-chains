@@ -39,6 +39,7 @@ export default function App() {
   const [input, setInput] = useState("");
   const [copied, setCopied] = useState(false);
   const [shakeRow, setShakeRow] = useState(false);
+  const [flipRowIndex, setFlipRowIndex] = useState(null);
 
   // Persists state to localStorage on changes
   useEffect(() => {
@@ -71,6 +72,9 @@ export default function App() {
         index: newIndex,                                                          // Sets index to index of next word in chain
         guesses: [...prev.guesses, guess],                                        // Adds the correct guess to the list of guesses                       
       }));
+      // Play a flip animation for the newly-guessed row
+      setFlipRowIndex(newIndex);
+      setTimeout(() => setFlipRowIndex(null), 600);
     } 
     // Handles an incorrect guess
     else {
@@ -235,7 +239,7 @@ export default function App() {
           const guessesRemaining = state.guessesRemaining[i - 1] || 0;
 
           return (
-            <div key={i} className={`row${isCurrentRow && shakeRow ? ' shake-row' : ''}`} aria-label={`word ${i}`}>
+            <div key={i} className={`row${isCurrentRow && shakeRow ? ' shake-row' : ''}${i === flipRowIndex ? ' flip-row' : ''}`} aria-label={`word ${i}`}>
               {Array.from({ length: word.length }).map((_, k) => {
                 const inputChar = isCurrentRow ? inputChars[k] || null : null;
                 const highlightCell = isCurrentRow && (k >= (word.length - guessesRemaining));

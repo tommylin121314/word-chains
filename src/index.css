@@ -218,3 +218,25 @@ input {
 .row.shake-row {
   animation: shake-row 300ms cubic-bezier(.36,.07,.19,.97);
 }
+
+/* Flip entire row when a word is correctly guessed */
+@keyframes flip-row {
+  0% {
+    transform: perspective(700px) rotateX(90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: perspective(700px) rotateX(-8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(700px) rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.row.flip-row {
+  transform-origin: center;
+  backface-visibility: hidden;
+  animation: flip-row 520ms cubic-bezier(.22,.9,.34,1);
+}
