@@ -175,6 +175,7 @@ export default function App() {
   // Helper function to generate positions of free letters
   // Picks up to `n` distinct indices in [min, max] (inclusive), avoiding adjacent indices.
   function randInts(n, min, max) {
+    if (max < min) return new Set();
     const ints = new Set();
     for (let i = 0; i < max * n; i++) {
       if (ints.size >= n) break;
@@ -195,7 +196,7 @@ export default function App() {
       const minIndex = wordLength <= 3 ? 0 : 1;
       const maxIndex = Math.max(minIndex, wordLength - 2); // avoid last index (wordLength-1)
       const count = Math.floor(wordLength / 5) + 1;
-      freeLetters.push([...randInts(count, minIndex, maxIndex)]);
+      freeLetters.push([0, ...randInts(count - 1, minIndex + 2, maxIndex)]);
     }
     return freeLetters;
   }
