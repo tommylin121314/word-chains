@@ -2,17 +2,7 @@ import { useEffect, useState } from "react";
 import Keyboard from "./Keyboard";
 import Chain from "./Chain";
 import Srand from 'seeded-rand';
-
-const CHAINS = [
-  ["COFFEE", "CUP", "HANDLE", "BAR", "EXAM", "PROCTOR"],
-  ["BIRTH", "DAY", "DRINKING", "FOUNTAIN", "PEN", "PAL"],
-  ["MINUTE", "HAND", "WATCH", "BAND", "WAGON", "WHEEL"],
-  ["SCHOOL", "BUS", "DRIVER", "LICENSE", "PLATE", "NUMBER"],
-  ["HOUSE", "TOUR", "GUIDE", "RAIL", "ROAD", "TRIP"],
-  ["PHONE", "BATTERY", "CHARGER", "CABLE", "INTERNET", "SPEED"],
-  ["SPARKLING", "WATER", "LOG", "CABIN", "FEVER", "DREAM"],
-  ["SALAD", "DRESSING", "ROOM", "KEY", "CHAIN", "SAW"]
-];
+import CHAINS from "./chains";
 
 // Fetches word chain based on current date
 function getTodayChain() {
