@@ -205,3 +205,16 @@ input {
   color: #b7f7d9;
   font-weight: 600;
 }
+
+/* Shake animation for a row on wrong guess */
+@keyframes shake-row {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px) rotate(-0.1deg); }
+  50% { transform: translateX(4px) rotate(0.1deg); }
+  75% { transform: translateX(-2px) rotate(-0.1deg); }
+  100% { transform: translateX(0); }
+}
+
+.row.shake-row {
+  animation: shake-row 300ms cubic-bezier(.36,.07,.19,.97);
+}

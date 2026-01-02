@@ -38,6 +38,7 @@ export default function App() {
   });
   const [input, setInput] = useState("");
   const [copied, setCopied] = useState(false);
+  const [shakeRow, setShakeRow] = useState(false);
 
   // Persists state to localStorage on changes
   useEffect(() => {
@@ -83,6 +84,9 @@ export default function App() {
             )
           };
         });
+        // Trigger a brief shake on the current row to indicate wrong guess
+        setShakeRow(true);
+        setTimeout(() => setShakeRow(false), 700);
       } else {
         setState((prev) => ({ ...prev, guesses: [...prev.guesses, guess] }));
       }
@@ -231,7 +235,7 @@ export default function App() {
           const guessesRemaining = state.guessesRemaining[i - 1] || 0;
 
           return (
-            <div key={i} className="row" aria-label={`word ${i}`}>
+            <div key={i} className={`row${isCurrentRow && shakeRow ? ' shake-row' : ''}`} aria-label={`word ${i}`}>
               {Array.from({ length: word.length }).map((_, k) => {
                 const inputChar = isCurrentRow ? inputChars[k] || null : null;
                 const highlightCell = isCurrentRow && (k >= (word.length - guessesRemaining));
