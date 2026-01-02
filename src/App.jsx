@@ -30,11 +30,8 @@ export default function App() {
   // Initializes state from localStorage or default values
   const [state, setState] = useState(() => {
     const saved = localStorage.getItem(todayKey);
-    const freeLetters = [];
-    for (let i = 1; i < chain.length; i++) {
-      freeLetters.push([...randInts(Math.floor(chain[i].length / 5) + 1, chain[i].length - 1)]);
-    }
-    const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
+    const freeLetters = generateFreeLetterIndices();
+    const defaultGuessesRemaining = getWordLengths().slice(1);
     return saved
       ? JSON.parse(saved)
       : { index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining, freeLetters: freeLetters };
@@ -96,11 +93,8 @@ export default function App() {
 
   // Resets game state to initial values
   function resetState() {
-    const freeLetters = [];
-    for (let i = 1; i < chain.length; i++) {
-      freeLetters.push([...randInts(Math.floor(chain[i].length / 5) + 1, chain[i].length - 1)]);
-    }
-    const defaultGuessesRemaining = chain.map((w) => w.length).slice(1);
+    const freeLetters = generateFreeLetterIndices();
+    const defaultGuessesRemaining = getWordLengths().slice(1);
     setState({ index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining, freeLetters: freeLetters });
     setInput("");
   }
@@ -124,17 +118,33 @@ export default function App() {
     return (guess.length === (chain[state.index + 1]?.length || 0))
   }
 
-  // Helper function to generate position of free letters
-  function randInts(n, max) {
+  // Helper function to generate positions of free letters
+  // Picks up to `n` distinct indices in [min, max] (inclusive), avoiding adjacent indices.
+  function randInts(n, min, max) {
     const ints = new Set();
     for (let i = 0; i < max * n; i++) {
       if (ints.size >= n) break;
-      const randInt = Math.floor(rnd.random() * max)
-      if (!ints.has(randInt) && !ints.has(randInt - 1) && !ints.has(randInt + 1)) {
-        ints.add(randInt);
+      const r = Math.floor(rnd.intInRange(min, max));
+      if (!ints.has(r) && !ints.has(r - 1) && !ints.has(r + 1)) {
+        ints.add(r);
       }
     }
     return ints;
+  }
+
+  // Generates array of free letter indices for each word in chain
+  function generateFreeLetterIndices() {
+    const freeLetters = [];
+    for (let i = 1; i < chain.length; i++) {
+      const wordLength = chain[i].length;
+      freeLetters.push([...randInts(Math.floor(wordLength / 5) + 1, wordLength <= 3 ? 0 : 1, wordLength - 1)]);
+    }
+    return freeLetters;
+  }
+
+  // Generates array of word lengths in chain
+  function getWordLengths() {
+    return chain.map((word) => word.length);
   }
 
 
