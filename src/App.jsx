@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Keyboard from "./Keyboard";
+import Chain from "./Chain";
 import Srand from 'seeded-rand';
 
 const CHAINS = [
@@ -104,8 +105,6 @@ export default function App() {
 
     setInput("");                                                                 // Resets input field for next guess
   }
-
-  // keyboard handled by `Keyboard` component
 
   // Resets game state to initial values
   function resetState() {
@@ -239,61 +238,13 @@ export default function App() {
       
       <h1>Word Chain</h1>
 
-      <div className="chain">
-        {chain.map((word, i) => {
-          const wordGuessed = i <= state.index;
-          const isFirstWord = i === 0;
-          const perfectGuess = (i > 0 && state.guessesRemaining[i - 1] === word.length && wordGuessed);
-          const isCurrentRow = i === state.index + 1;
-          const inputChars = (input || "").toUpperCase().split("");
-          const guessesRemaining = state.guessesRemaining[i - 1] || 0;
-
-          return (
-            <div key={i} className={`row${isCurrentRow && shakeRow ? ' shake-row' : ''}${i === flipRowIndex ? ' flip-row' : ''}`} aria-label={`word ${i}`}>
-              {Array.from({ length: word.length }).map((_, k) => {
-                const inputChar = isCurrentRow ? inputChars[k] || null : null;
-                const highlightCell = isCurrentRow && (k >= (word.length - guessesRemaining));
-
-                // set boolean values determine classes and display
-                const freeIndices = state.freeLetters?.[i - 1] || [];
-                const isFreeIndex = i > 0 && (freeIndices.includes ? freeIndices.includes(k) : Array.from(freeIndices).includes(k));
-                const freeLetterRevealed = i > 0 && (word.length - guessesRemaining > k) && isFreeIndex;
-                const freeLetterJustRevealed = freeLetterRevealed && (word.length - guessesRemaining === k + 1);
-
-                const showLetter = (freeLetterRevealed || wordGuessed || isFirstWord || inputChar);
-                const display = (inputChar ?? (showLetter ? word[k] : null));
-
-
-                // build class list
-                const classes = ["cell"];
-                if (perfectGuess) classes.push("perfect-guess");
-                else if (isFirstWord) classes.push("free-revealed");
-                else if (freeLetterRevealed && !inputChar) classes.push("given");
-                else if (wordGuessed) classes.push("guessed");
-
-                // add translucent question-mark hint for free-letter cells that are still hidden
-                if (isFreeIndex && !showLetter) classes.push("free-hint");
-
-                // highlights cells based on guesses remaining
-                if (highlightCell) classes.push("highlight-cell");
-
-                // if free letter just revealed, add a brief highlight animation
-                if (freeLetterJustRevealed) classes.push("free-reveal-animate");
-
-                return (
-                  <div
-                    key={k}
-                    className={classes.join(" ")}
-                    aria-hidden={!(display)}
-                  >
-                    {display}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+      <Chain
+        chain={chain}
+        state={state}
+        input={input}
+        flipRowIndex={flipRowIndex}
+        shakeRow={shakeRow}
+      />
 
       {!state.completed && !state.failed && (
         <Keyboard
