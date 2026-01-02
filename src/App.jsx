@@ -61,7 +61,12 @@ export default function App() {
   function submitGuess(e) {
     if (e && e.preventDefault) e.preventDefault();
     const guess = input.trim().toUpperCase();
-    if (!isValidGuess(guess)) return;
+    if (!isValidGuess(guess)) {
+      // Trigger a brief shake on the current row to indicate wrong guess
+      setShakeRow(true);
+      setTimeout(() => setShakeRow(false), 700);
+      return;
+    }
 
     const nextIndex = state.index + 1;
 
@@ -184,7 +189,9 @@ export default function App() {
 
   // Checks if guess is valid based on expected length
   function isValidGuess(guess) {
-    return (guess.length === (chain[state.index + 1]?.length || 0))
+    const isCorrectLength = (guess.length === (chain[state.index + 1]?.length || 0))
+    const isNewGuess = !state.guesses.includes(guess);
+    return isCorrectLength && isNewGuess;
   }
 
   // Helper function to generate positions of free letters
