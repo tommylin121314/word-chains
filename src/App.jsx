@@ -5,14 +5,19 @@ import DateMenu from "./DateMenu";
 import Srand from 'seeded-rand';
 import CHAINS from "./chains";
 
-// Fetches word chain based on a date string (YYYY-MM-DD)
+// Map date to chain index deterministically so a contiguous block of
+// `CHAINS.length` dates maps to all chains (no repeats).
+function daysSinceEpoch(dateStr) {
+  const d = new Date(dateStr + "T00:00:00");
+  return Math.floor(d.getTime() / 86400000);
+}
+
 function getChainForDate(dateStr) {
-  const today = dateStr || new Date().toISOString().slice(0, 10);
-  let hash = 0;
-  for (let i = 0; i < today.length; i++) {
-    hash = (hash << 5) - hash + today.charCodeAt(i);
-  }
-  return CHAINS[Math.abs(hash) % CHAINS.length];
+  const n = CHAINS.length;
+  const date = dateStr || new Date().toISOString().slice(0, 10);
+  const dayNum = daysSinceEpoch(date);
+  const idx = ((dayNum % n) + n) % n;
+  return CHAINS[idx];
 }
 
 export default function App() {
