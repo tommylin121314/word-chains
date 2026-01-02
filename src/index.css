@@ -219,6 +219,47 @@ input {
   animation: shake-row 300ms cubic-bezier(.36,.07,.19,.97);
 }
 
+/* On-screen keyboard */
+.keyboard-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.typed-preview {
+  min-height: 28px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", monospace;
+  letter-spacing: 0.06em;
+}
+
+.keyboard { display: flex; flex-direction: column; gap: 8px; }
+.keyboard-row { display: flex; gap: 6px; justify-content: center; }
+.key { 
+  min-width: 48px; 
+  height: 48px; 
+  border: 2px solid #3a3a3c; 
+  background: rgba(255,255,255,0.02); 
+  color: #fff; 
+  font-weight: 700; 
+  font-size: 16px; 
+  cursor: pointer; 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 0 8px; 
+  box-sizing: border-box;
+}
+.key:active { transform: translateY(1px); }
+.key.wide { min-width: 72px; }
+.key.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #6b6b6b;
+}
+
+
 /* Flip entire row when a word is correctly guessed */
 @keyframes flip-row {
   0% {
