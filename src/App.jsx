@@ -144,7 +144,11 @@ export default function App() {
     const freeLetters = [];
     for (let i = 1; i < chain.length; i++) {
       const wordLength = chain[i].length;
-      freeLetters.push([...randInts(Math.floor(wordLength / 5) + 1, wordLength <= 3 ? 0 : 1, wordLength - 1)]);
+      // Avoid selecting the first or last letter as a free letter.
+      const minIndex = wordLength <= 3 ? 0 : 1;
+      const maxIndex = Math.max(minIndex, wordLength - 2); // avoid last index (wordLength-1)
+      const count = Math.floor(wordLength / 5) + 1;
+      freeLetters.push([...randInts(count, minIndex, maxIndex)]);
     }
     return freeLetters;
   }
