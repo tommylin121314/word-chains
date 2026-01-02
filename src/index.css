@@ -75,16 +75,32 @@ body {
 
 .date-item {
   padding: 8px 10px;
-  /* border-radius: 4px; */
   color: #fff;
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
   font-size: 13px;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .date-item:hover { background: rgba(255,255,255,0.03); }
 .date-item.active { background: linear-gradient(90deg,#2a2a2a,#222); border-color:#3a3a3a; }
+
+.date-label { margin-right: 8px; }
+.date-status {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  color: #fff;
+  opacity: 0.0;
+}
+.date-status.success { background: #65ac54; opacity: 1; }
+.date-status.failed { background: #d9534f; opacity: 1; }
 
 h1 {
   margin-bottom: 30px;

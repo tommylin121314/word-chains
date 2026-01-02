@@ -8,7 +8,7 @@ function formatDate(d) {
 // DateMenu builds a fixed list of dates on mount and does not change
 // when `selectedDate` changes. The list covers exactly `CHAINS.length` days
 // ending on the base date (today at mount time).
-export default function DateMenu({ selectedDate, setSelectedDate }) {
+export default function DateMenu({ selectedDate, setSelectedDate, refreshKey }) {
   const base = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const today = useMemo(() => new Date(base + "T00:00:00"), [base]);
   const count = CHAINS.length;
@@ -23,6 +23,23 @@ export default function DateMenu({ selectedDate, setSelectedDate }) {
     }
     return arr;
   }, [today, count]);
+
+  // Precompute saved statuses for each date (based on localStorage keys)
+  const statuses = useMemo(() => {
+    return dates.map((d) => {
+      const ds = formatDate(d);
+      try {
+        const saved = localStorage.getItem(`wordchain-${ds}`);
+        if (!saved) return null;
+        const parsed = JSON.parse(saved);
+        if (parsed.completed) return 'success';
+        if (parsed.failed) return 'failed';
+        return null;
+      } catch (e) {
+        return null;
+      }
+    });
+  }, [dates, refreshKey]);
 
   useEffect(() => {
     const container = listRef.current;
@@ -44,16 +61,18 @@ export default function DateMenu({ selectedDate, setSelectedDate }) {
     <div className="side-menu" aria-label="Date menu">
       <h3>Choose Date</h3>
       <div className="date-list" ref={listRef}>
-        {dates.map((d) => {
+        {dates.map((d, idx) => {
           const ds = formatDate(d);
           const label = ds === formatDate(new Date()) ? `Today (${ds})` : ds;
+          const status = statuses[idx];
           return (
             <button
               key={ds}
               className={`date-item ${ds === selectedDate ? 'active' : ''}`}
               onClick={() => setSelectedDate(ds)}
             >
-              {label}
+              <span className="date-label">{label}</span>
+              <span className={`date-status ${status || ''}`}>{status === 'success' ? '✓' : status === 'failed' ? '✕' : ''}</span>
             </button>
           );
         })}

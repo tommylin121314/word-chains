@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Keyboard from "./Keyboard";
 import Chain from "./Chain";
 import DateMenu from "./DateMenu";
@@ -39,11 +39,35 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const [shakeRow, setShakeRow] = useState(false);
   const [flipRowIndex, setFlipRowIndex] = useState(null);
+  const [storageTick, setStorageTick] = useState(0);
 
   // Persists state to localStorage on changes
+  // Persist the current state's data for the currently-selected date
+  // Run only when `state` changes to avoid accidentally writing the
+  // previous state's values into a new date key during a date switch.
   useEffect(() => {
-    localStorage.setItem(todayKey, JSON.stringify(state));
+    const key = `wordchain-${selectedDate}`;
+    localStorage.setItem(key, JSON.stringify(state));
+    setStorageTick((t) => t + 1);
   }, [state]);
+
+  // Keep track of the previous selected date so that when the user
+  // switches dates we explicitly save the *previous* state's data to
+  // its own key. This prevents the following race: selectedDate
+  // changes, a save running for the new key would write the previous
+  // state's values into the new key (causing mismatched free-letter
+  // indices). We save prev state here before loading the new date's
+  // state.
+  const prevSelectedRef = useRef(selectedDate);
+  useEffect(() => {
+    const prev = prevSelectedRef.current;
+    if (prev !== selectedDate) {
+      const prevKey = `wordchain-${prev}`;
+      localStorage.setItem(prevKey, JSON.stringify(state));
+      setStorageTick((t) => t + 1);
+      prevSelectedRef.current = selectedDate;
+    }
+  }, [selectedDate]);
 
   // When the selected date changes, reload (or create) state for that date
   useEffect(() => {
@@ -252,7 +276,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <DateMenu selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+      <DateMenu selectedDate={selectedDate} setSelectedDate={setSelectedDate} refreshKey={storageTick} />
       <div className="main">
       <h1>Word Chain</h1>
 
