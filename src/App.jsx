@@ -234,11 +234,13 @@ export default function App() {
                 const classes = ["cell"];
                 if (perfectGuess) classes.push("perfect-guess");
                 else if (isFirstWord) classes.push("free-revealed");
-                else if (freeLetterRevealed) classes.push("given");
+                else if (freeLetterRevealed && !inputChar) classes.push("given");
                 else if (wordGuessed) classes.push("guessed");
 
                 // add translucent question-mark hint for free-letter cells that are still hidden
                 if (isFreeIndex && !showLetter) classes.push("free-hint");
+
+                // highlights cells based on guesses remaining
                 if (highlightCell) classes.push("highlight-cell");
 
                 return (
