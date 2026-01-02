@@ -236,10 +236,11 @@ export default function App() {
                 const inputChar = isCurrentRow ? inputChars[k] || null : null;
                 const highlightCell = isCurrentRow && (k >= (word.length - guessesRemaining));
 
-                // free letter indices are stored for words after the first one
+                // set boolean values determine classes and display
                 const freeIndices = state.freeLetters?.[i - 1] || [];
                 const isFreeIndex = i > 0 && (freeIndices.includes ? freeIndices.includes(k) : Array.from(freeIndices).includes(k));
                 const freeLetterRevealed = i > 0 && (word.length - guessesRemaining > k) && isFreeIndex;
+                const freeLetterJustRevealed = freeLetterRevealed && (word.length - guessesRemaining === k + 1);
 
                 const showLetter = (freeLetterRevealed || wordGuessed || isFirstWord || inputChar);
                 const display = (inputChar ?? (showLetter ? word[k] : null));
@@ -257,6 +258,9 @@ export default function App() {
 
                 // highlights cells based on guesses remaining
                 if (highlightCell) classes.push("highlight-cell");
+
+                // if free letter just revealed, add a brief highlight animation
+                if (freeLetterJustRevealed) classes.push("free-reveal-animate");
 
                 return (
                   <div

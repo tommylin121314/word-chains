@@ -71,6 +71,31 @@ h1 {
   pointer-events: none;
 }
 
+/* Flip reveal animation for free letters when they become visible */
+@keyframes flip-reveal {
+  0% {
+    transform: perspective(600px) rotateX(90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: perspective(600px) rotateX(-10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(600px) rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.cell {
+  backface-visibility: hidden;
+  transform-origin: center;
+}
+
+.cell.free-reveal-animate {
+  animation: flip-reveal 1000ms cubic-bezier(.22,.9,.34,1);
+}
+
 .blanks {
   display: flex;
   justify-content: center;
