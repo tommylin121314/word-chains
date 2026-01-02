@@ -127,7 +127,10 @@ export default function App() {
     const ints = new Set();
     for (let i = 0; i < max * n; i++) {
       if (ints.size >= n) break;
-      ints.add(Math.floor(Math.random() * max));
+      const randInt = Math.floor(Math.random() * max)
+      if (!ints.has(randInt) && !ints.has(randInt - 1) && !ints.has(randInt + 1)) {
+        ints.add(randInt);
+      }
     }
     return ints;
   }
