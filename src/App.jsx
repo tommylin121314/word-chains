@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Srand from 'seeded-rand';
 
 const CHAINS = [
   ["COFFEE", "CUP", "HANDLE", "BAR", "EXAM", "PROCTOR"],
@@ -24,6 +25,7 @@ function getTodayChain() {
 export default function App() {
   const chain = getTodayChain();
   const todayKey = `wordchain-${new Date().toISOString().slice(0, 10)}`;
+  const rnd = new Srand(todayKey);
 
   // Initializes state from localStorage or default values
   const [state, setState] = useState(() => {
@@ -127,7 +129,7 @@ export default function App() {
     const ints = new Set();
     for (let i = 0; i < max * n; i++) {
       if (ints.size >= n) break;
-      const randInt = Math.floor(Math.random() * max)
+      const randInt = Math.floor(rnd.random() * max)
       if (!ints.has(randInt) && !ints.has(randInt - 1) && !ints.has(randInt + 1)) {
         ints.add(randInt);
       }
