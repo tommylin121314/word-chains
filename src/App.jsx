@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Keyboard from "./Keyboard";
 import Srand from 'seeded-rand';
 
 const CHAINS = [
@@ -39,7 +40,6 @@ export default function App() {
   const [input, setInput] = useState("");
   const [copied, setCopied] = useState(false);
   const [shakeRow, setShakeRow] = useState(false);
-  const [activeKey, setActiveKey] = useState(null);
   const [flipRowIndex, setFlipRowIndex] = useState(null);
 
   // Persists state to localStorage on changes
@@ -105,65 +105,7 @@ export default function App() {
     setInput("");                                                                 // Resets input field for next guess
   }
 
-  // --- On-screen keyboard helpers ---
-  function addLetter(ch) {
-    if (state.completed || state.failed) return;
-    const maxLen = chain[state.index + 1]?.length || 20;
-    if ((input || "").length >= maxLen) return;
-    setInput((s) => (s + ch).slice(0, maxLen));
-  }
-
-  function backspace() {
-    if (state.completed || state.failed) return;
-    setInput((s) => s.slice(0, -1));
-  }
-
-  function handleEnter() {
-    submitGuess();
-  }
-
-  // physical keyboard support: type and use enter/backspace
-  useEffect(() => {
-    function onKeyDown(e) {
-      if (state.completed || state.failed) return;
-      const key = e.key;
-      if (key === "Enter") {
-        e.preventDefault();
-        setActiveKey('ENTER');
-        handleEnter();
-        return;
-      }
-      if (key === "Backspace") {
-        e.preventDefault();
-        setActiveKey('BACKSPACE');
-        backspace();
-        return;
-      }
-      const letter = key.toUpperCase();
-      if (/^[A-Z]$/.test(letter)) {
-        e.preventDefault();
-        setActiveKey(letter);
-        addLetter(letter);
-      }
-    }
-
-    function onKeyUp(e) {
-      const key = e.key;
-      if (key === "Enter") setActiveKey(null);
-      else if (key === "Backspace") setActiveKey(null);
-      else {
-        const letter = key.toUpperCase();
-        if (/^[A-Z]$/.test(letter)) setActiveKey(null);
-      }
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup", onKeyUp);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup", onKeyUp);
-    };
-  }, [state.completed, state.failed, state.index, input]);
+  // keyboard handled by `Keyboard` component
 
   // Resets game state to initial values
   function resetState() {
@@ -354,65 +296,13 @@ export default function App() {
       </div>
 
       {!state.completed && !state.failed && (
-        <div className="keyboard-area">
-          <div className="keyboard">
-              <div className="keyboard-row">
-                {"QWERTYUIOP".split("").map((k) => (
-                  <button
-                    key={k}
-                    className={`key ${activeKey === k ? 'active' : ''}`}
-                    onMouseDown={() => setActiveKey(k)}
-                    onMouseUp={() => setActiveKey(null)}
-                    onTouchStart={() => setActiveKey(k)}
-                    onTouchEnd={() => setActiveKey(null)}
-                    onClick={() => addLetter(k)}
-                  >{k}</button>
-                ))}
-              </div>
-            <div className="keyboard-row">
-              {"ASDFGHJKL".split("").map((k) => (
-                <button
-                  key={k}
-                  className={`key ${activeKey === k ? 'active' : ''}`}
-                  onMouseDown={() => setActiveKey(k)}
-                  onMouseUp={() => setActiveKey(null)}
-                  onTouchStart={() => setActiveKey(k)}
-                  onTouchEnd={() => setActiveKey(null)}
-                  onClick={() => addLetter(k)}
-                >{k}</button>
-              ))}
-            </div>
-            <div className="keyboard-row">
-              <button
-                className={`key wide ${activeKey === 'BACKSPACE' ? 'active' : ''}`}
-                onMouseDown={() => setActiveKey('BACKSPACE')}
-                onMouseUp={() => setActiveKey(null)}
-                onTouchStart={() => setActiveKey('BACKSPACE')}
-                onTouchEnd={() => setActiveKey(null)}
-                onClick={() => { backspace(); }}
-              >&larr;</button>
-              {"ZXCVBNM".split("").map((k) => (
-                <button
-                  key={k}
-                  className={`key ${activeKey === k ? 'active' : ''}`}
-                  onMouseDown={() => setActiveKey(k)}
-                  onMouseUp={() => setActiveKey(null)}
-                  onTouchStart={() => setActiveKey(k)}
-                  onTouchEnd={() => setActiveKey(null)}
-                  onClick={() => addLetter(k)}
-                >{k}</button>
-              ))}
-              <button
-                className={`key wide ${activeKey === 'ENTER' ? 'active' : ''}`}
-                onMouseDown={() => setActiveKey('ENTER')}
-                onMouseUp={() => setActiveKey(null)}
-                onTouchStart={() => setActiveKey('ENTER')}
-                onTouchEnd={() => setActiveKey(null)}
-                onClick={handleEnter}
-              >⏎</button>
-            </div>
-          </div>
-        </div>
+        <Keyboard
+          value={input}
+          setValue={setInput}
+          onSubmit={submitGuess}
+          maxLength={chain[state.index + 1]?.length || 20}
+          disabled={state.completed || state.failed}
+        />
       )}
 
       {state.completed && (
