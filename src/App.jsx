@@ -177,10 +177,10 @@ export default function App() {
   function randInts(n, min, max) {
     if (max < min) return new Set();
     const ints = new Set();
-    for (let i = 0; i < max * n; i++) {
+    for (let i = 0; i < max ** 3; i++) {
       if (ints.size >= n) break;
       const r = Math.floor(rnd.intInRange(min, max));
-      if (!ints.has(r) && !ints.has(r - 1) && !ints.has(r + 1)) {
+      if (!ints.has(r)) {
         ints.add(r);
       }
     }
@@ -193,11 +193,14 @@ export default function App() {
     for (let i = 1; i < chain.length; i++) {
       const wordLength = chain[i].length;
       // Avoid selecting the first or last letter as a free letter.
-      const minIndex = wordLength <= 3 ? 0 : 1;
+      const minIndex = 0;
       const maxIndex = Math.max(minIndex, wordLength - 2); // avoid last index (wordLength-1)
-      const count = Math.floor(wordLength / 5) + 1;
-      freeLetters.push([0, ...randInts(count - 1, minIndex + 2, maxIndex)]);
+      const count = Math.floor(wordLength / 2);
+      freeLetters.push([...randInts(count, minIndex, maxIndex)]);
+      console.log(chain[i]);
+      console.log(count, minIndex, maxIndex);
     }
+    console.log(freeLetters);
     return freeLetters;
   }
 
