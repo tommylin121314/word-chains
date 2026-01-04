@@ -1,5 +1,7 @@
 import React, { useMemo, useRef, useEffect } from "react";
 import CHAINS from "./chains";
+import { differenceInDays } from 'date-fns';
+
 
 const estFormatter = new Intl.DateTimeFormat('en', {
   timeZone: 'America/New_York',
@@ -27,9 +29,10 @@ export default function DateMenu({ selectedDate, setSelectedDate, refreshKey }) 
 
   const dates = useMemo(() => {
     const arr = [];
-    const startDate = "2026-01-01";
-    for (let i = 0; i < count; i++) {
-      const d = new Date(startDate + "T00:00:00");
+    const startDate = new Date("2026-01-01T00:00:00");
+    const daysUntilToday = differenceInDays(today, startDate) + 1;
+    for (let i = 0; i < daysUntilToday; i++) {
+      const d = new Date(startDate);
       d.setDate(d.getDate() + i);
       arr.push(d);
     }
@@ -88,6 +91,9 @@ export default function DateMenu({ selectedDate, setSelectedDate, refreshKey }) 
             </button>
           );
         })}
+      </div>
+      <div className={`date-list-end`}>
+        <span className="date-label">Coming soon...</span>
       </div>
     </div>
   );
