@@ -16,9 +16,10 @@ export default function DateMenu({ selectedDate, setSelectedDate, refreshKey }) 
 
   const dates = useMemo(() => {
     const arr = [];
-    for (let i = count - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
+    const startDate = "2025-12-25";
+    for (let i = 0; i < count; i++) {
+      const d = new Date(startDate + "T00:00:00");
+      d.setDate(d.getDate() + i);
       arr.push(d);
     }
     return arr;
