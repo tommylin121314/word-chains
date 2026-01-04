@@ -114,7 +114,7 @@ export default function App() {
       setState((prev) => ({
         ...prev,
         index: newIndex,                                                          // Sets index to index of next word in chain
-        guesses: [...prev.guesses, guess],                                        // Adds the correct guess to the list of guesses                       
+        guesses: [],                                                              // Resets guesses for next word             
       }));
       // Play a flip animation for the newly-guessed row
       setFlipRowIndex(newIndex);
