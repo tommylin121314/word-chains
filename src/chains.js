@@ -14,7 +14,7 @@ const CHAINS = [
     ["WATER", "BOTTLE", "CAP", "STONE", "WALL", "CLOCK"],
     ["LIGHT", "HOUSE", "PARTY", "LINE", "BACKER", "BOARD"],
     ["KEY", "BOARD", "GAME", "PLAN", "BUDGET", "CUT"],
-    ["PAPER", "CUT", "GLASS", "CEILING", "FAN", "BELT"],
+    ["PAPER", "CUT", "THROAT", "MEDICINE", "CABINET", "DOOR"],
     ["MORNING", "STAR", "FISH", "TANK", "TOP", "HAT"],
     ["CREDIT", "CARD", "GAME", "SHOW", "TIME", "ZONE"],
     ["PHONE", "BOOK", "CLUB", "HOUSE", "PLANT", "FOOD"],

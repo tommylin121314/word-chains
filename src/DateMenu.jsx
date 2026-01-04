@@ -1,4 +1,6 @@
-import React, { useMemo, useRef, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/style.css';
 import CHAINS from "./chains";
 import { differenceInDays } from 'date-fns';
 
@@ -23,13 +25,26 @@ function formatDate(d) {
 // ending on the base date (today at mount time).
 export default function DateMenu({ selectedDate, setSelectedDate, refreshKey }) {
   const base = useMemo(() => formatDate(new Date()), []);
-  const today = useMemo(() => new Date(base + "T00:00:00"), [base]);
+  // helpers to parse YYYY-MM-DD and build local Date at midnight
+  function parseYMD(ymd) {
+    const parts = String(ymd).split('-').map((p) => parseInt(p, 10));
+    return parts.length === 3 && parts.every((n) => !Number.isNaN(n)) ? parts : null;
+  }
+  function localDateFromYMD(y, m, d) {
+    return new Date(y, m - 1, d);
+  }
+
+  const today = useMemo(() => {
+    const parts = parseYMD(base);
+    if (!parts) return new Date();
+    const [y, m, d] = parts;
+    return localDateFromYMD(y, m, d);
+  }, [base]);
   const count = CHAINS.length;
-  const listRef = useRef(null);
 
   const dates = useMemo(() => {
     const arr = [];
-    const startDate = new Date("2026-01-01T00:00:00");
+    const startDate = new Date(2026, 0, 1);
     const daysUntilToday = differenceInDays(today, startDate) + 1;
     for (let i = 0; i < daysUntilToday; i++) {
       const d = new Date(startDate);
@@ -39,61 +54,88 @@ export default function DateMenu({ selectedDate, setSelectedDate, refreshKey }) 
     return arr;
   }, [today, count]);
 
-  // Precompute saved statuses for each date (based on localStorage keys)
-  const statuses = useMemo(() => {
-    return dates.map((d) => {
+  // Map date string -> status for quick lookup by the date picker
+  const statusMap = useMemo(() => {
+    const m = new Map();
+    dates.forEach((d) => {
       const ds = formatDate(d);
       try {
         const saved = localStorage.getItem(`wordchain-${ds}`);
-        if (!saved) return null;
+        if (!saved) { m.set(ds, null); return; }
         const parsed = JSON.parse(saved);
-        if (parsed.completed) return 'success';
-        if (parsed.failed) return 'failed';
-        return null;
+        if (parsed.completed) m.set(ds, 'success');
+        else if (parsed.failed) m.set(ds, 'failed');
+        else m.set(ds, null);
       } catch (e) {
-        return null;
+        m.set(ds, null);
       }
     });
+    return m;
   }, [dates, refreshKey]);
 
-  useEffect(() => {
-    const container = listRef.current;
-    if (!container) return;
-    const active = container.querySelector('.date-item.active');
-    if (!active) return;
-    const containerCenter = container.clientHeight / 2;
-    const activeCenter = active.offsetTop + active.offsetHeight / 2;
-    const scrollTop = Math.max(0, activeCenter - containerCenter);
-    // Smoothly scroll the container so the active item is centered
-    if (typeof container.scrollTo === 'function') {
-      container.scrollTo({ top: scrollTop, behavior: 'smooth' });
-    } else {
-      container.scrollTop = scrollTop;
+  const selectedDateObj = useMemo(() => {
+    if (!selectedDate) return today;
+    const parts = parseYMD(selectedDate);
+    if (!parts) return today;
+    const [y, m, d] = parts;
+    return localDateFromYMD(y, m, d);
+  }, [selectedDate, today]);
+
+  function toISODate(d) {
+    if (!d) return null;
+    // If it's a JS Date
+    if (d instanceof Date) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
     }
-  }, [selectedDate, dates]);
+    // If it's a calendar/date object from @internationalized/date
+    if (typeof d.year === 'number' && typeof d.month === 'number' && typeof d.day === 'number') {
+      const y = d.year;
+      const m = String(d.month).padStart(2, '0');
+      const day = String(d.day).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+    try {
+      return formatDate(new Date(d));
+    } catch {
+      return null;
+    }
+  }
 
   return (
     <div className="side-menu" aria-label="Date menu">
-      <h3>Choose Date</h3>
-      <div className="date-list" ref={listRef}>
-        {dates.map((d, idx) => {
-          const ds = formatDate(d);
-          const label = ds === formatDate(new Date()) ? `Today (${ds})` : ds;
-          const status = statuses[idx];
-          return (
-            <button
-              key={ds}
-              className={`date-item ${ds === selectedDate ? 'active' : ''}`}
-              onClick={() => setSelectedDate(ds)}
-            >
-              <span className="date-label">{label}</span>
-              <span className={`date-status ${status || ''}`}>{status === 'success' ? '✓' : status === 'failed' ? '✕' : ''}</span>
-            </button>
-          );
-        })}
-      </div>
-      <div className={`date-list-end`}>
-        <span className="date-label">Coming soon...</span>
+      <div className="date-picker-container">
+        <div className="daypicker-wrapper">
+          {/* Build arrays of Date objects for status modifiers */}
+          {(() => {
+            const successDates = [];
+            const failedDates = [];
+            for (const [ds, st] of statusMap.entries()) {
+              if (!ds) continue;
+              const parts = parseYMD(ds);
+              if (!parts) continue;
+              const d = localDateFromYMD(parts[0], parts[1], parts[2]);
+              if (st === 'success') successDates.push(d);
+              else if (st === 'failed') failedDates.push(d);
+            }
+            return (
+              <DayPicker
+                mode="single"
+                selected={selectedDateObj}
+                onSelect={(d) => {
+                  if (!d) return;
+                  const iso = toISODate(d);
+                  setSelectedDate(iso);
+                }}
+                disabled={{ before: new Date(2026, 0, 1), after: today }}
+                modifiers={{ success: successDates, failed: failedDates }}
+                modifiersClassNames={{ success: 'status-success', failed: 'status-failed' }}
+              />
+            );
+          })()}
+        </div>
       </div>
     </div>
   );

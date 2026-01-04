@@ -197,10 +197,7 @@ export default function App() {
       const maxIndex = Math.max(minIndex, wordLength - 2); // avoid last index (wordLength-1)
       const count = Math.floor(wordLength / 2);
       freeLetters.push([...randInts(count, minIndex, maxIndex)]);
-      console.log(chain[i]);
-      console.log(count, minIndex, maxIndex);
     }
-    console.log(freeLetters);
     return freeLetters;
   }
 
