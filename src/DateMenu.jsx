@@ -1,22 +1,33 @@
 import React, { useMemo, useRef, useEffect } from "react";
 import CHAINS from "./chains";
 
+const estFormatter = new Intl.DateTimeFormat('en', {
+  timeZone: 'America/New_York',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
 function formatDate(d) {
-  return d.toISOString().slice(0, 10);
+  const parts = estFormatter.formatToParts(d).reduce((acc, p) => {
+    acc[p.type] = p.value;
+    return acc;
+  }, {});
+  return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
 // DateMenu builds a fixed list of dates on mount and does not change
 // when `selectedDate` changes. The list covers exactly `CHAINS.length` days
 // ending on the base date (today at mount time).
 export default function DateMenu({ selectedDate, setSelectedDate, refreshKey }) {
-  const base = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const base = useMemo(() => formatDate(new Date()), []);
   const today = useMemo(() => new Date(base + "T00:00:00"), [base]);
   const count = CHAINS.length;
   const listRef = useRef(null);
 
   const dates = useMemo(() => {
     const arr = [];
-    const startDate = "2025-12-25";
+    const startDate = "2026-01-01";
     for (let i = 0; i < count; i++) {
       const d = new Date(startDate + "T00:00:00");
       d.setDate(d.getDate() + i);
