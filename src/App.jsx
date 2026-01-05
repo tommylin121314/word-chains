@@ -215,6 +215,19 @@ export default function App() {
     return chain.map((word) => word.length);
   }
 
+  // Days since Jan 1st (1-based)
+  function daysSinceJan1(dateStr) {
+    try {
+      const d = new Date(dateStr + "T00:00:00");
+      const start = new Date(d.getFullYear(), 0, 1);
+      const msPerDay = 24 * 60 * 60 * 1000;
+      return Math.floor((d - start) / msPerDay) + 1;
+    } catch {
+      return null;
+    }
+  }
+  const dayNumber = daysSinceJan1(selectedDate) || "";
+
 
   // Build a textual representation of the current gameboard for sharing
   function buildShareText() {
@@ -306,7 +319,7 @@ export default function App() {
           </div>
         )}
         <div className="main">
-        <h1>Word Chain</h1>
+        <h1>Word Chain {dayNumber ? `#${dayNumber}` : ""}</h1>
 
       <Chain
         chain={chain}
