@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import Keyboard from "./Keyboard";
 import Chain from "./Chain";
 import DateMenu from "./DateMenu";
+import Navbar from "./Navbar";
+import HelpModal from "./HelpModal";
 import Srand from 'seeded-rand';
 import CHAINS from "./chains";
 
@@ -21,6 +23,8 @@ function getChainForDate(dateStr) {
 }
 
 export default function App() {
+  const [showDateMenu, setShowDateMenu] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const chain = getChainForDate(selectedDate);
   const todayKey = `wordchain-${selectedDate}`;
@@ -83,6 +87,11 @@ export default function App() {
       }
     }
     setState({ index: 0, guesses: [], completed: false, failed: false, guessesRemaining: defaultGuessesRemaining, freeLetters: freeLetters });
+  }, [selectedDate]);
+
+  // Close date menu when the selected date changes (user picked a date)
+  useEffect(() => {
+    if (showDateMenu) setShowDateMenu(false);
   }, [selectedDate]);
 
   // Checks for win condition
@@ -276,10 +285,28 @@ export default function App() {
 
 
   return (
-    <div className="app">
-      <DateMenu selectedDate={selectedDate} setSelectedDate={setSelectedDate} refreshKey={storageTick} />
-      <div className="main">
-      <h1>Word Chain</h1>
+    <>
+      <Navbar onToggleDate={() => setShowDateMenu((s) => !s)} onToggleHelp={() => setShowHelp((s) => !s)} />
+
+      {(showDateMenu || showHelp) && (
+        <div
+          className="backdrop"
+          onClick={() => {
+            setShowDateMenu(false);
+            setShowHelp(false);
+          }}
+          aria-hidden="true"
+        />
+      )}
+
+      <div className="app">
+        {showDateMenu && (
+          <div className="date-overlay" role="dialog" aria-label="Date selector">
+            <DateMenu selectedDate={selectedDate} setSelectedDate={setSelectedDate} refreshKey={storageTick} />
+          </div>
+        )}
+        <div className="main">
+        <h1>Word Chain</h1>
 
       <Chain
         chain={chain}
@@ -326,6 +353,9 @@ export default function App() {
 
       </div>
 
-    </div>
+      </div>
+
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+    </>
   );
 }
