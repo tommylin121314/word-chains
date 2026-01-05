@@ -298,6 +298,77 @@ input {
   --rdp-disabled-opacity: 0.3;
 }
 
+/* Markers for completed/failed dates in the DayPicker */
+.rdp-day_button.status-success,
+.rdp-day_button.status-failed,
+.rdp-day_button--success,
+.rdp-day_button--failed,
+.rdp-day--success,
+.rdp-day--failed,
+.rdp-day.status-success,
+.rdp-day.status-failed {
+  position: relative;
+}
+
+/* Check/X markers (cover multiple class naming conventions used by different versions)
+   Larger and positioned to the top-right of the day button for visibility */
+.rdp-day_button.status-success::after,
+.rdp-day_button--success::after,
+.rdp-day--success::after,
+.rdp-day.status-success::after {
+  content: "✓";
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 14px;
+  color: #b7f7d9;
+  font-weight: 800;
+  pointer-events: none;
+}
+.rdp-day_button.status-failed::after,
+.rdp-day_button--failed::after,
+.rdp-day--failed::after,
+.rdp-day.status-failed::after {
+  content: "✕";
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 14px;
+  color: #f7a6a6;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+/* Backgrounds for success / failed days */
+/* Remove colored background washes for success/failed days; keep markers */
+.rdp-day_button.status-success,
+.rdp-day_button--success,
+.rdp-day--success,
+.rdp-day.status-success,
+.rdp-day_button.status-failed,
+.rdp-day_button--failed,
+.rdp-day--failed,
+.rdp-day.status-failed {
+  background: transparent;
+  border-color: inherit;
+  color: inherit;
+}
+
+/* Ensure markers remain visible but less harsh */
+.rdp-day_button.status-success::after,
+.rdp-day_button--success::after,
+.rdp-day--success::after,
+.rdp-day.status-success::after {
+  color: #65ac54; /* green check */
+}
+.rdp-day_button.status-failed::after,
+.rdp-day_button--failed::after,
+.rdp-day--failed::after,
+.rdp-day.status-failed::after {
+  color: #cf4a4a; /* red X */
+}
+
+
 /* Navbar styles */
 .navbar {
   width: 100%;
