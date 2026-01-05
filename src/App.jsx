@@ -16,16 +16,32 @@ function daysSinceEpoch(dateStr) {
 
 function getChainForDate(dateStr) {
   const n = CHAINS.length;
-  const date = dateStr || new Date().toISOString().slice(0, 10);
+  const date = dateStr || nyIsoDate();
   const dayNum = daysSinceEpoch(date);
   const idx = ((dayNum % n) + n) % n;
   return CHAINS[idx];
 }
 
+// Formatter for America/New_York dates to produce YYYY-MM-DD
+const nyFormatter = new Intl.DateTimeFormat('en', {
+  timeZone: 'America/New_York',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+function nyIsoDate(d = new Date()) {
+  const parts = nyFormatter.formatToParts(d).reduce((acc, p) => {
+    acc[p.type] = p.value;
+    return acc;
+  }, {});
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
 export default function App() {
   const [showDateMenu, setShowDateMenu] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [selectedDate, setSelectedDate] = useState(() => nyIsoDate());
   const chain = getChainForDate(selectedDate);
   const todayKey = `wordchain-${selectedDate}`;
   const rnd = new Srand(todayKey);
@@ -231,7 +247,7 @@ export default function App() {
 
   // Build a textual representation of the current gameboard for sharing
   function buildShareText() {
-    const today = new Date().toISOString().slice(0, 10).replace(/-/g, "/");
+    const today = nyIsoDate().replace(/-/g, "/");
     const lines = [`Word Chain — ${today}\n`];
     const greenBox = "🟩";
     const blueBox = "🟦";
