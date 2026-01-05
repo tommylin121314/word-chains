@@ -4,7 +4,6 @@ import Chain from "./Chain";
 import DateMenu from "./DateMenu";
 import Navbar from "./Navbar";
 import HelpModal from "./HelpModal";
-import * as Srand from 'seeded-rand';
 import CHAINS from "./chains";
 
 // Map date to chain index deterministically so a contiguous block of
@@ -38,13 +37,24 @@ function nyIsoDate(d = new Date()) {
   return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
+function mulberry32(seed) {
+  let t = seed >>> 0;
+  return function () {
+    t += 0x6D2B79F5;
+    let r = Math.imul(t ^ (t >>> 15), t | 1);
+    r ^= r + Math.imul(r ^ (r >>> 7), r | 61);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+
 export default function App() {
   const [showDateMenu, setShowDateMenu] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [selectedDate, setSelectedDate] = useState(() => nyIsoDate());
   const chain = getChainForDate(selectedDate);
   const todayKey = `wordchain-${selectedDate}`;
-  const rnd = new Srand(todayKey);
+  const rnd = mulberry32(todayKey);
 
   // Initializes state from localStorage or default values
   const [state, setState] = useState(() => {
@@ -204,7 +214,7 @@ export default function App() {
     const ints = new Set();
     for (let i = 0; i < max ** 3; i++) {
       if (ints.size >= n) break;
-      const r = Math.floor(rnd.intInRange(min, max));
+      const r = Math.floor(rnd() * (max - min + 1)) + min;
       if (!ints.has(r)) {
         ints.add(r);
       }
