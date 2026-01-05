@@ -4,7 +4,7 @@ import Chain from "./Chain";
 import DateMenu from "./DateMenu";
 import Navbar from "./Navbar";
 import HelpModal from "./HelpModal";
-import Srand from 'seeded-rand';
+import * as Srand from 'seeded-rand';
 import CHAINS from "./chains";
 
 // Map date to chain index deterministically so a contiguous block of
