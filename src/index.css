@@ -6,8 +6,17 @@ body {
 }
 
 .app {
-  max-width: 400px;
-  margin: 40px auto;
+  display: flex;
+  gap: 20px;
+  max-width: 920px;
+  margin: 24px auto;
+  align-items: flex-start;
+}
+
+.main {
+  flex: 1 1 auto;
+  max-width: 640px;
+  margin: 0 auto;
   text-align: center;
 }
 
@@ -45,6 +54,55 @@ h1 {
   padding: 6px;
   box-sizing: border-box;
   background: transparent;
+  position: relative;
+}
+
+.cell:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Current active row cells (not-yet-typed) show a subtle lighter background */
+.cell.highlight-cell {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* translucent question mark for free-letter hints (hidden cells) */
+.cell.free-hint::after {
+  content: "?";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  opacity: 0.16;
+  font-weight: 800;
+  font-size: 28px;
+  pointer-events: none;
+}
+
+/* Flip reveal animation for free letters when they become visible */
+@keyframes flip-reveal {
+  0% {
+    transform: perspective(600px) rotateX(90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: perspective(600px) rotateX(-10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(600px) rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.cell {
+  backface-visibility: hidden;
+  transform-origin: center;
+}
+
+.cell.free-reveal-animate {
+  animation: flip-reveal 1000ms cubic-bezier(.22,.9,.34,1);
 }
 
 .blanks {
@@ -55,9 +113,13 @@ h1 {
 }
 
 .cell.guessed {
-  background: #538d4e;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #65ac54 0%, #538d4e 65%);
   border-color: #538d4e;
   color: #fff;
+  box-shadow: 0 6px 16px rgba(83,141,78,0.14), inset 0 1px 0 rgba(255,255,255,0.12);
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
 }
 
 .cell.free-revealed {
@@ -74,10 +136,18 @@ h1 {
   color: #fff;
 }
 
-.cell.revealed {
-  background: #bea73e;
-  border-color: #bea73e;
+.cell.perfect-guess {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #6fd6db 0%, #4ea2a8 60%);
+  border-color: #4ea2a8;
   color: #fff;
+  box-shadow: 0 6px 18px rgba(78,162,168,0.18), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.cell.given {
+  color: #8b8b8b;
 }
 
 input {
@@ -94,6 +164,297 @@ input {
 }
 
 .complete {
+  width: 50%;
   margin-top: 30px;
   font-size: 24px;
+  display: inline-block;
+  padding: 10px 14px;
+  border: 2px solid #3a3a3c;
+  background: transparent;
+  color: #fff;
+}
+
+/* Share button styles */
+.share-btn {
+  width: 50%;
+  margin-top: 10px;
+  font-size: 22px;
+  display: inline-block;
+  padding: 10px 14px;
+  border: 2px solid #3a3a3c;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+/* Share button styles */
+.reset-btn {
+  width: 50%;
+  margin-top: 10px;
+  font-size: 22px;
+  display: inline-block;
+  padding: 10px 14px;
+  border: 2px solid #3a3a3c;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.share-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.reset-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.copied {
+  color: #b7f7d9;
+  font-weight: 600;
+}
+
+/* Shake animation for a row on wrong guess */
+@keyframes shake-row {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px) rotate(-0.1deg); }
+  50% { transform: translateX(4px) rotate(0.1deg); }
+  75% { transform: translateX(-2px) rotate(-0.1deg); }
+  100% { transform: translateX(0); }
+}
+
+.row.shake-row {
+  animation: shake-row 300ms cubic-bezier(.36,.07,.19,.97);
+}
+
+/* On-screen keyboard */
+.keyboard-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.typed-preview {
+  min-height: 28px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", monospace;
+  letter-spacing: 0.06em;
+}
+
+.keyboard { display: flex; flex-direction: column; gap: 8px; }
+.keyboard-row { display: flex; gap: 6px; justify-content: center; }
+.key { 
+  min-width: 48px; 
+  height: 48px; 
+  border: 2px solid #3a3a3c; 
+  background: rgba(255,255,255,0.02); 
+  color: #fff; 
+  font-weight: 700; 
+  font-size: 16px; 
+  cursor: pointer; 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 0 8px; 
+  box-sizing: border-box;
+}
+.key:active { transform: translateY(1px); }
+.key.wide { min-width: 72px; }
+.key.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #6b6b6b;
+}
+
+
+/* Flip entire row when a word is correctly guessed */
+@keyframes flip-row {
+  0% {
+    transform: perspective(700px) rotateX(90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: perspective(700px) rotateX(-8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(700px) rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.row.flip-row {
+  transform-origin: center;
+  backface-visibility: hidden;
+  animation: flip-row 520ms cubic-bezier(.22,.9,.34,1);
+}
+
+.rdp-root {
+  --rdp-accent-color: #ffffff;
+  --rdp-day_button-border-radius: 0px;
+  --rdp-selected-border: 2px solid rgba(255, 255, 255, 0.1);
+  --rdp-disabled-opacity: 0.3;
+}
+
+/* Markers for completed/failed dates in the DayPicker */
+.rdp-day_button.status-success,
+.rdp-day_button.status-failed,
+.rdp-day_button--success,
+.rdp-day_button--failed,
+.rdp-day--success,
+.rdp-day--failed,
+.rdp-day.status-success,
+.rdp-day.status-failed {
+  position: relative;
+}
+
+/* Check/X markers (cover multiple class naming conventions used by different versions)
+   Larger and positioned to the top-right of the day button for visibility */
+.rdp-day_button.status-success::after,
+.rdp-day_button--success::after,
+.rdp-day--success::after,
+.rdp-day.status-success::after {
+  content: "✓";
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 14px;
+  color: #b7f7d9;
+  font-weight: 800;
+  pointer-events: none;
+}
+.rdp-day_button.status-failed::after,
+.rdp-day_button--failed::after,
+.rdp-day--failed::after,
+.rdp-day.status-failed::after {
+  content: "✕";
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 14px;
+  color: #f7a6a6;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+/* Backgrounds for success / failed days */
+/* Remove colored background washes for success/failed days; keep markers */
+.rdp-day_button.status-success,
+.rdp-day_button--success,
+.rdp-day--success,
+.rdp-day.status-success,
+.rdp-day_button.status-failed,
+.rdp-day_button--failed,
+.rdp-day--failed,
+.rdp-day.status-failed {
+  background: transparent;
+  border-color: inherit;
+  color: inherit;
+}
+
+/* Ensure markers remain visible but less harsh */
+.rdp-day_button.status-success::after,
+.rdp-day_button--success::after,
+.rdp-day--success::after,
+.rdp-day.status-success::after {
+  color: #65ac54; /* green check */
+}
+.rdp-day_button.status-failed::after,
+.rdp-day_button--failed::after,
+.rdp-day--failed::after,
+.rdp-day.status-failed::after {
+  color: #cf4a4a; /* red X */
+}
+
+
+/* Navbar styles */
+.navbar {
+  width: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.navbar-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+.brand {
+  font-weight: 700;
+}
+.nav-actions { display: flex; gap: 8px; }
+.nav-btn {
+  background: transparent;
+  border: 2px solid #3a3a3c;
+  color: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.04); }
+
+/* Overlay for date menu */
+.date-overlay {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 25%;
+  z-index: 50;
+  background: rgba(29,29,31,0.96);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 12px;
+}
+
+/* Simple help modal */
+.help-modal {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  z-index: 60;
+}
+.help-content {
+  background: rgba(29,29,31,0.96);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 32px 28px 42px 28px;
+  max-width: 400px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+}
+
+.help-content h2,
+.help-content p {
+  margin: 12px;
+  text-align: center;
+}
+
+.help-content .nav-btn {
+  display: block;
+  margin: 16px auto 0;
+}
+
+.cell.help-example {
+  min-width: 36px;
+  min-height: 36px;
+  font-size: 16px;
+}
+
+/* Fullscreen backdrop used to dim the page when popups are open */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 45;
 }

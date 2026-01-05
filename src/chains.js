@@ -1,0 +1,32 @@
+const CHAINS = [
+    ["COFFEE", "CUP", "HANDLE", "BAR", "EXAM", "PROCTOR"],
+    ["BIRTH", "DAY", "DRINKING", "FOUNTAIN", "PEN", "PAL"],
+    ["MINUTE", "HAND", "WATCH", "BAND", "WAGON", "WHEEL"],
+    ["SCHOOL", "BUS", "DRIVER", "LICENSE", "PLATE", "NUMBER"],
+    ["HOUSE", "TOUR", "GUIDE", "RAIL", "ROAD", "TRIP"],
+    ["PHONE", "BATTERY", "CHARGER", "CABLE", "TELEVISION", "PROVIDER"],
+    ["SPARKLING", "WATER", "LOG", "CABIN", "FEVER", "DREAM"],
+    ["SALAD", "DRESSING", "ROOM", "KEY", "CHAIN", "SAW"],
+    ["RAIN", "CLOUD", "COMPUTER", "MOUSE", "TRAP", "DOOR"],
+    ["SNOW", "STORM", "SHELTER", "DOG", "HOUSE", "PLANT"],
+    ["BOOK", "SHELF", "LIFE", "JACKET", "POTATO", "SALAD"],
+    ["FIRE", "PLACE", "SETTING", "SUN", "SCREEN", "SHOT"],
+    ["WATER", "BOTTLE", "CAP", "STONE", "WALL", "CLOCK"],
+    ["LIGHT", "HOUSE", "PARTY", "LINE", "BACKER", "BOARD"],
+    ["KEY", "BOARD", "GAME", "PLAN", "BUDGET", "CUT"],
+    ["PAPER", "CUT", "THROAT", "MEDICINE", "CABINET", "DOOR"],
+    ["MORNING", "STAR", "FISH", "TANK", "TOP", "HAT"],
+    ["CREDIT", "CARD", "GAME", "SHOW", "TIME", "ZONE"],
+    ["PHONE", "BOOK", "CLUB", "HOUSE", "PLANT", "FOOD"],
+    ["CAR", "WASH", "CYCLE", "RACK", "ROOM", "SERVICE"],
+    ["MOUNTAIN", "BIKE", "CHAIN", "LINK", "FENCE", "POST"],
+    ["AIR", "PORT", "SECURITY", "LINE", "ITEM", "LIST"],
+    ["CITY", "PARK", "BENCH", "PRESS", "RELEASE", "DATE"],
+    ["HOME", "WORK", "STATION", "WAGON", "WHEEL", "BASE"],
+    ["NEWS", "PAPER", "CLIP", "BOARD", "GAME", "NIGHT"],
+    ["MOVIE", "STAR", "POWER", "GRID", "LOCK", "SMITH"],
+    ["BABY", "FOOD", "CHAIN", "STORE", "FRONT", "DESK"],
+    ["SAND", "BOX", "SPRING", "ROLL", "CALL", "SHEET"]
+];
+
+export default CHAINS;
