@@ -258,7 +258,7 @@ export default function App() {
   // Build a textual representation of the current gameboard for sharing
   function buildShareText() {
     const today = nyIsoDate().replace(/-/g, "/");
-    const lines = [`Word Chain — ${today}\n`];
+    const lines = [`Word Chain #${dayNumber}\n`];
     const greenBox = "🟩";
     const blueBox = "🟦";
     const blackBox = "⬛";
@@ -268,15 +268,23 @@ export default function App() {
 
     // Add subsequent words
     for (let i = 1; i < chain.length; i++) {
-      const firstLetterRevealed = state.guessesRemaining[i - 1] === 1;
       const wordGuessed = i <= state.index;
       const perfectGuess = (i > 0 && state.guessesRemaining[i - 1] === chain[i].length && wordGuessed);
+      let line = '';
       if (wordGuessed) {
         if (perfectGuess) {
           lines.push(chain[i].split("").map(() => blueBox).join(""));
         }
         else {
-          lines.push(firstLetterRevealed ? blackBox + greenBox.repeat(chain[i].length - 1) : greenBox.repeat(chain[i].length));
+          for (let j = 0; j < chain[i].length; j++) {
+            if (state.freeLetters[i - 1].includes(j) && (chain[i].length - state.guessesRemaining[i - 1]) >= j + 1) {
+              line += blackBox;
+            }
+            else {
+              line += greenBox;
+            }
+          }
+          lines.push(line);
         }
       }
       else {
